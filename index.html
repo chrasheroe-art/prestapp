@@ -245,9 +245,9 @@ oninput="if(this.value.length===4)checkPin()">
 <button class="fab-back" id="fab-back" onclick="fabBackAction()">← Volver</button>
 <div class="bnav">
 <button class="ni active" id="nav-deudas" onclick="navTo('deudas',this)"><span class="ni-ico">💳</span>Deudas</button>
-<button class="ni" id="nav-clientes" onclick="navTo('clientes',this)"><span class="ni-ico"></span>Clientes</button>
+<button class="ni" id="nav-clientes" onclick="navTo('clientes',this)"><span class="ni-ico">👥</span>Clientes</button>
 <button class="ni" id="nav-cobrar" onclick="navTo('cobrar-hoy',this)"><span class="ni-ico">🔔</span>Cobrar</button>
-<button class="ni" id="nav-propuestas" onclick="navTo('propuestas',this)"><span class="ni-ico"></span>Propuestas</button>
+<button class="ni" id="nav-propuestas" onclick="navTo('propuestas',this)"><span class="ni-ico">🧮</span>Propuestas</button>
 <button class="ni" id="nav-resumen" onclick="navTo('resumen',this)"><span class="ni-ico">📊</span>Resumen</button>
 </div>
 <div class="dv" id="dv">
@@ -1922,12 +1922,15 @@ var i=idx;
 while(remaining>0.009&&i<sched.length){
 var p=sched[i];
 if(p.status==='pagado'){i++;continue;}
-var restante=Math.max(0,p.amount-(p.abonado||0));
+var atrI=calcAtraso(loan,i,p);
+var descI=p.descuento||0;
+var totalI=Math.max(0,Math.round((p.amount+atrI.monto-descI)*100)/100);
+var restante=Math.max(0,Math.round((totalI-(p.abonado||0))*100)/100);
 var toApply=Math.min(remaining,restante);
 if(toApply>0.009){
 payments.push({id:'a'+Date.now()+'x'+i,prestamo_id:lid,cliente_id:S.client,monto:Math.round(toApply*100)/100,fecha:date,notas:(i===idx?(document.getElementById('ep-abono-nota')&&document.getElementById('ep-abono-nota').value.trim()||'Abono'):'Excedente → Pago '+(i+1)),estado:'abono',pago_index:i});
 var newAbonado=(p.abonado||0)+toApply;
-var newStatus=newAbonado>=p.amount-0.009?'pagado':'parcial';
+var newStatus=newAbonado>=totalI-0.009?'pagado':'parcial';
 saveOv(lid,i,{status:newStatus});
 }
 remaining-=toApply;
