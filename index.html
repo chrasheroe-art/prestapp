@@ -473,7 +473,7 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 </select>
 </div>
 <div class="fg"><label class="fl">12. Notas</label><input class="fi" id="ep-notes" type="text" placeholder="Opcional"></div>
-<button class="btn-p" onclick="pagarDesdeBoton(document.getElementById('ep-lid').value,parseInt(document.getElementById('ep-idx').value))" style="margin-top:6px;background:var(--green);border-color:var(--green);">💳 Registrar pago completo</button>
+<button class="btn-p" onclick="pagarDesdeBoton(document.getElementById('ep-lid').value,parseInt(document.getElementById('ep-idx').value))" style="margin-top:6px;background:var(--green);border-color:var(--green);">💳 Registrar abono</button>
 <button class="btn-p" onclick="saveEditPay()" style="margin-top:6px;">💾 Guardar cambios</button>
 <button class="btn-o" onclick="closeModal('m-ep')" style="margin-top:8px;">Cerrar</button>
 </div>
@@ -1245,7 +1245,7 @@ var sched=getSched(loan);var total=0;
 sched.forEach(function(p,idx){
 if(p.status==='pagado') return;
 var a=calcAtraso(loan,idx,p);
-total+=Math.max(0,p.amount-(p.abonado||0))+a.monto-Math.max(0,p.descuento||0);
+total+=Math.max(0,Math.round((p.amount+a.monto-(p.descuento||0)-(p.abonado||0))*100)/100);
 });
 return total;
 }
