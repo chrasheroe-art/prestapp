@@ -1376,7 +1376,8 @@ var dRate=parseFloat(document.getElementById('l-dpct-rate').value)||0;
 var dStart=document.getElementById('l-dpct-start').value;
 var dEnd=document.getElementById('l-dpct-end').value;
 document.getElementById('l-dpct-pct').textContent=dRate;
-var txt='Capital: '+fmt(dAmt)+'\nPorcentaje diario: '+dRate+'%';
+var warningDpct=dRate>10?'\n⚠ Porcentaje diario alto: '+dRate+'% diario = '+Math.round(dRate*30)+'% mensual aprox.':'';
+var txt='Capital: '+fmt(dAmt)+'\nPorcentaje diario: '+dRate+'%'+warningDpct;
 if(dStart&&dEnd&&dEnd>=dStart){
 var dias=daysBetween(dStart,dEnd)+1;
 var interesDiario=dAmt*(dRate/100);
@@ -2282,7 +2283,7 @@ var isMeter=(freq==='daily_meter');
 var isDpct=(freq==='daily_percent');
 var isFixed=(freq==='daily_fixed');
 if(!amt){showNotif('Ingresa el monto primero');return;}
-var pct=parseFloat(document.getElementById('pr-interest').value)||0;
+var pct=isDpct?(parseFloat(document.getElementById('pr-dpct-rate').value)||0):(parseFloat(document.getElementById('pr-interest').value)||0);
 var n=(isMeter||isDpct||isFixed)?1:parseInt(document.getElementById('pr-npay').value)||1;
 var fd=isFixed?'':(isMeter||isDpct)?'':document.getElementById('pr-firstdate').value;
 var fixedPaydate=isFixed?document.getElementById('pr-paydate').value:'';
@@ -2330,6 +2331,7 @@ document.getElementById('l-fixed-paydate-wrap').style.display='none';
 document.getElementById('l-dpct-start').value=ps.meterStart||todayStr();
 document.getElementById('l-dpct-end').value=ps.meterEnd||'';
 document.getElementById('l-dpct-end').min=ps.meterStart||todayStr();
+document.getElementById('l-dpct-rate').value=ps.pct||2;
 document.getElementById('l-dpct-rate').value=ps.pct;
 }else if(ps.isFixed){
 document.getElementById('l-meter-wrap').style.display='none';
