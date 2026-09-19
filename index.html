@@ -8,9 +8,6 @@
 <meta name="theme-color" content="#1E3A5F">
 <title>PrestApp</title>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="apple-touch-icon" href="icon.png">
-<link rel="icon" type="image/png" href="icon.png">
-<link rel="manifest" href="manifest.json">
 <style>
 :root{
 --blue:#1E3A5F;--blue-mid:#2563B0;--blue-light:#DBEAFE;--blue-pale:#EFF6FF;
@@ -70,6 +67,8 @@ body{background:var(--bg);color:var(--text);font-size:15px;overflow-x:hidden;}
 .fab:active{transform:scale(.97);}
 .fab-back{position:fixed;bottom:24px;right:16px;z-index:400;border:none;cursor:pointer;border-radius:28px;font-family:inherit;font-weight:700;font-size:15px;padding:13px 20px;background:rgba(15,23,42,.82);backdrop-filter:blur(6px);color:#fff;box-shadow:0 4px 20px rgba(0,0,0,.35);display:none;align-items:center;gap:6px;}
 .fab-back.visible{display:flex;}
+.fab-back:active{transform:scale(.97);}
+.fab-back{position:fixed;bottom:80px;right:16px;z-index:300;border:none;cursor:pointer;border-radius:28px;font-family:inherit;font-weight:700;font-size:14px;padding:12px 20px;background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(30,58,95,.4);}
 .fab-back:active{transform:scale(.97);}
 .bnav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;}
 .ni{flex:1;padding:10px 4px 8px;text-align:center;cursor:pointer;border:none;background:none;font-family:inherit;color:var(--muted);font-size:10px;display:flex;flex-direction:column;align-items:center;gap:3px;font-weight:500;}
@@ -149,6 +148,7 @@ body{background:var(--bg);color:var(--text);font-size:15px;overflow-x:hidden;}
 .pdi-num{font-weight:700;color:var(--purple);width:22px;flex-shrink:0;}
 .pdi-date{flex:1;color:var(--muted);}
 .pdi-amt{font-weight:700;font-family:DM Mono,monospace;}
+.prop-note{background:var(--orange-light);border-radius:var(--rs);padding:10px 13px;font-size:12px;color:var(--orange);margin-top:10px;line-height:1.7;}
 .prop-rules{background:var(--blue-pale);border-radius:var(--rs);padding:12px 14px;font-size:12px;color:var(--blue);line-height:1.9;margin-top:12px;}
 .divider{height:1px;background:var(--border);margin:14px 0;}
 .empty{text-align:center;padding:50px 20px;color:var(--muted);}
@@ -205,7 +205,7 @@ body{max-width:480px;margin:0 auto;}
 <body>
 <div class="notif" id="notif"></div>
 <div class="setup-screen" id="pin-screen">
-<div class="setup-logo"></div>
+<div class="setup-logo">🔐</div>
 <div class="setup-title">PrestApp</div>
 <div class="setup-sub">Ingresa tu PIN para continuar</div>
 <div class="setup-card">
@@ -251,7 +251,7 @@ oninput="if(this.value.length===4)checkPin()">
 <button class="ni" id="nav-clientes" onclick="navTo('clientes',this)"><span class="ni-ico">👥</span>Clientes</button>
 <button class="ni" id="nav-cobrar" onclick="navTo('cobrar-hoy',this)"><span class="ni-ico">🔔</span>Cobrar</button>
 <button class="ni" id="nav-propuestas" onclick="navTo('propuestas',this)"><span class="ni-ico">🧮</span>Propuestas</button>
-<button class="ni" id="nav-resumen" onclick="navTo('resumen',this)"><span class="ni-ico">📊</span>Resumen</button>
+<button class="ni" id="nav-resumen" onclick="navTo('resumen',this)"><span class="ni-ico"></span>Resumen</button>
 </div>
 <div class="dv" id="dv">
 <div class="dh">
@@ -263,7 +263,7 @@ oninput="if(this.value.length===4)checkPin()">
 </div>
 <div class="dbody">
 <div class="rem-row">
-<button class="rem-a rem-wa" onclick="sendWA(null,null)">📱 WhatsApp</button>
+<button class="rem-a rem-wa" onclick="sendWA(null,null)"> WhatsApp</button>
 <button class="rem-a rem-sms" onclick="sendSMS()">💬 SMS</button>
 </div>
 <div class="tabs" style="margin:0 -14px 14px;">
@@ -283,7 +283,7 @@ oninput="if(this.value.length===4)checkPin()">
 <div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:4px;">Calcula y envía la propuesta por WhatsApp</div>
 </div>
 <div class="prop-body">
-<div class="fg"><label class="fl">Monto a prestar *</label><input class="fi" id="pr-amount" type="number" placeholder="0" min="0" oninput="calcProp()"></div>
+<div class="fg"><label class="fl">Monto a prestar *</label><input class="fi" id="pr-amount" type="number" placeholder="0" min="0" step="0.01" oninput="calcProp()"></div>
 <div class="fg">
 <label class="fl">Tipo de pago</label>
 <select class="fi fsel" id="pr-freq" onchange="propFreqChange()">
@@ -295,16 +295,24 @@ oninput="if(this.value.length===4)checkPin()">
 <option value="monthly">Mensual</option>
 </select>
 </div>
-<div id="pr-pct-wrap" class="fg"><label class="fl">Interés (%)</label><input class="fi" id="pr-interest" type="number" placeholder="0" min="0" value="10" oninput="calcProp()"></div>
+<div id="pr-pct-wrap" class="fg"><label class="fl">Interés (%)</label><input class="fi" id="pr-interest" type="number" placeholder="0" min="0" step="0.01" value="10" oninput="calcProp()"></div>
 <div class="fg" id="pr-npay-wrap"><label class="fl">Número de pagos</label><input class="fi" id="pr-npay" type="number" placeholder="1" min="1" value="4" oninput="calcProp()"></div>
 <div class="fg" id="pr-firstdate-wrap"><label class="fl">Fecha del primer pago</label><input class="fi" id="pr-firstdate" type="date" onchange="calcProp()"></div>
 <div class="fg" id="pr-paydate-wrap" style="display:none;"><label class="fl">Fecha de pago *</label><input class="fi" id="pr-paydate" type="date" onchange="calcProp()">
 <div id="pr-days-info" style="font-size:12px;color:var(--blue);background:var(--blue-light);border-radius:var(--rs);padding:8px 12px;margin-top:6px;display:none;"></div>
 </div>
 <div id="pr-meter-wrap" style="display:none;">
-<div class="fg" id="pr-dpct-rate-wrap" style="display:none;"><label class="fl">💯 Porcentaje diario (%)</label><input class="fi" id="pr-dpct-rate" type="number" placeholder="0" min="0" step="0.01" value="2" oninput="calcProp()"></div>
-<div class="fg"><label class="fl">📅 Fecha de inicio (día 1)</label><input class="fi" id="pr-meter-start" type="date" onchange="propMeterStartChanged()"></div>
-<div class="fg"><label class="fl">📅 Fecha promesa de pago</label><input class="fi" id="pr-meter-end" type="date" onchange="calcProp()"></div>
+<div class="fg" id="pr-dpct-rate-wrap" style="display:none;background:var(--purple-light);border-radius:var(--rs);padding:12px 14px;">
+<label class="fl" style="color:var(--purple);">💯 Porcentaje diario (%)</label>
+<input class="fi" id="pr-dpct-rate" type="number" placeholder="0" min="0" step="0.01" value="2" oninput="calcProp()" style="border-color:var(--purple);">
+<div style="font-size:11px;color:var(--muted);margin-top:4px;">Se acumula este % sobre el monto cada día transcurrido.</div>
+</div>
+<div class="fg"><label class="fl">📅 Fecha de inicio (día 1)</label><input class="fi" id="pr-meter-start" type="date" onchange="propMeterStartChanged()">
+<div style="font-size:11px;color:var(--muted);margin-top:4px;">Puedes seleccionar cualquier fecha, incluso futura</div>
+</div>
+<div class="fg"><label class="fl">📅 Fecha promesa de pago</label><input class="fi" id="pr-meter-end" type="date" onchange="calcProp()">
+<div style="font-size:11px;color:var(--muted);margin-top:4px;">Si paga después, sigue acumulando.</div>
+</div>
 <div id="pr-meter-info" style="font-size:12px;color:var(--blue);padding:8px 12px;background:var(--blue-light);border-radius:var(--rs);margin-top:6px;display:none;"></div>
 </div>
 <div class="fg"><label class="fl">Cliente (para enviar por WhatsApp)</label><select class="fi fsel" id="pr-client" onchange="propClientChange()"><option value="">Selecciona cliente (opcional)</option></select></div>
@@ -313,12 +321,13 @@ oninput="if(this.value.length===4)checkPin()">
 <div id="pr-total" class="prop-total"></div>
 <div id="pr-rows"></div>
 <div style="margin-top:12px;">
-<div class="section-title">📅 Calendario de pagos</div>
+<div class="section-title"> Calendario de pagos</div>
 <div id="pr-dates"></div>
 </div>
+<div id="pr-note" class="prop-note" style="display:none;"></div>
 <div class="prop-rules" id="pr-rules"></div>
 </div>
-<button class="btn-p" style="margin-top:14px;" onclick="sendPropWA()"> Enviar propuesta por WhatsApp</button>
+<button class="btn-p" style="margin-top:14px;" onclick="sendPropWA()">📱 Enviar propuesta por WhatsApp</button>
 <button class="btn-p" style="margin-top:8px;background:var(--purple);" onclick="usarPropuesta()">Usar esta propuesta → Crear préstamo</button>
 </div>
 </div>
@@ -329,7 +338,7 @@ oninput="if(this.value.length===4)checkPin()">
 <div class="mtitle">Nuevo préstamo</div>
 <div class="fg"><label class="fl">Cliente *</label><select class="fi fsel" id="l-client"></select></div>
 <div class="fg"><label class="fl">Concepto *</label><input class="fi" id="l-concept" type="text" placeholder="Ej: Préstamo personal"></div>
-<div class="fg"><label class="fl">Monto prestado *</label><input class="fi" id="l-amount" type="number" placeholder="0" min="0" oninput="calcLoanPreview()"></div>
+<div class="fg"><label class="fl">Monto prestado *</label><input class="fi" id="l-amount" type="number" placeholder="0" min="0" step="0.01" oninput="calcLoanPreview()"></div>
 <div class="fg">
 <label class="fl">Tipo de pago</label>
 <select class="fi fsel" id="l-freq" onchange="loanFreqChange()">
@@ -347,7 +356,9 @@ oninput="if(this.value.length===4)checkPin()">
 Se cobran $<span id="l-meter-daily">0</span> por día ($15 × cada $500).<br>
 El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, el cobro diario continúa sumándose automáticamente.
 </div>
-<div class="fg"><label class="fl">📅 Fecha de inicio (día 1) *</label><input class="fi" id="l-meter-start" type="date" oninput="meterStartChanged()"></div>
+<div class="fg"><label class="fl">📅 Fecha de inicio (día 1) *</label><input class="fi" id="l-meter-start" type="date" oninput="meterStartChanged()">
+<div style="font-size:11px;color:var(--muted);margin-top:4px;">Puedes seleccionar cualquier fecha, incluso futura</div>
+</div>
 <div class="fg"><label class="fl">📅 Fecha promesa de pago *</label><input class="fi" id="l-meter-end" type="date" oninput="calcLoanPreview()">
 <div style="font-size:11px;color:var(--muted);margin-top:4px;">Si el cliente paga después de esta fecha, se siguen sumando $<span id="l-meter-daily2">0</span>/día.</div>
 </div>
@@ -360,13 +371,15 @@ Se cobra un <span id="l-dpct-pct">0</span>% diario del monto prestado.<br>
 El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue acumulando automáticamente.
 </div>
 <div class="fg"><label class="fl">💯 Porcentaje diario (%) *</label><input class="fi" id="l-dpct-rate" type="number" placeholder="0" min="0" step="0.01" value="2" oninput="calcLoanPreview()"></div>
-<div class="fg"><label class="fl">📅 Fecha de inicio (día 1) *</label><input class="fi" id="l-dpct-start" type="date" oninput="dpctStartChanged()"></div>
-<div class="fg"><label class="fl"> Fecha promesa de pago *</label><input class="fi" id="l-dpct-end" type="date" oninput="calcLoanPreview()">
+<div class="fg"><label class="fl"> Fecha de inicio (día 1) *</label><input class="fi" id="l-dpct-start" type="date" oninput="dpctStartChanged()">
+<div style="font-size:11px;color:var(--muted);margin-top:4px;">Puedes seleccionar cualquier fecha, incluso futura</div>
+</div>
+<div class="fg"><label class="fl">📅 Fecha promesa de pago *</label><input class="fi" id="l-dpct-end" type="date" oninput="calcLoanPreview()">
 <div style="font-size:11px;color:var(--muted);margin-top:4px;">Si el cliente paga después, sigue acumulando el % diario.</div>
 </div>
 <div id="l-dpct-days-info" style="font-size:12px;color:var(--purple);padding:8px 12px;background:var(--purple-light);border-radius:var(--rs);margin-bottom:10px;display:none;"></div>
 </div>
-<div id="l-pct-wrap" class="fg"><label class="fl">Interés (%)</label><input class="fi" id="l-interest" type="number" placeholder="0" min="0" value="10" oninput="calcLoanPreview()"></div>
+<div id="l-pct-wrap" class="fg"><label class="fl">Interés (%)</label><input class="fi" id="l-interest" type="number" placeholder="0" min="0" step="0.01" value="10" oninput="calcLoanPreview()"></div>
 <div class="fg" id="l-npay-wrap"><label class="fl">Número de pagos</label><input class="fi" id="l-npay" type="number" placeholder="1" min="1" value="4" oninput="calcLoanPreview();buildDailyDates()"></div>
 <div class="fg" id="l-firstdate-wrap"><label class="fl">Fecha del primer pago *</label><input class="fi" id="l-firstdate" type="date" oninput="calcLoanPreview();buildDailyDates()"></div>
 <div class="fg" id="l-fixed-paydate-wrap" style="display:none;"><label class="fl">Fecha de pago *</label><input class="fi" id="l-fixed-paydate" type="date" oninput="calcLoanPreview()">
@@ -436,8 +449,8 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 <input type="hidden" id="ep-dpct-frozen" value="0">
 </div>
 <div class="fg"><label class="fl">4. Concepto</label><input class="fi" id="ep-concept" type="text"></div>
-<div class="fg"><label class="fl">5. Capital</label><input class="fi" id="ep-capital" type="number" min="0" placeholder="0" oninput="updateEpTotal()"></div>
-<div class="fg"><label class="fl">6. Interés</label><input class="fi" id="ep-interest" type="number" min="0" placeholder="0" oninput="updateEpTotal()"></div>
+<div class="fg"><label class="fl">5. Capital</label><input class="fi" id="ep-capital" type="number" min="0" step="0.01" placeholder="0" oninput="updateEpTotal()"></div>
+<div class="fg"><label class="fl">6. Interés</label><input class="fi" id="ep-interest" type="number" min="0" step="0.01" placeholder="0" oninput="updateEpTotal()"></div>
 <div style="background:var(--red-light);border-radius:var(--rs);padding:12px 14px;margin-bottom:13px;">
 <div style="font-size:11px;font-weight:700;color:var(--red);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">7. ⏰ Penalización por atraso</div>
 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
@@ -453,14 +466,14 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 <div style="background:var(--blue-light);border-radius:var(--rs);padding:12px 14px;margin-bottom:13px;">
 <div style="font-size:11px;font-weight:700;color:var(--blue-mid);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">8. 🏷 Descuento</div>
 <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
-<input type="number" min="0" id="ep-descuento" placeholder="0" style="width:120px;padding:4px 8px;font-size:13px;border:1px solid var(--blue-mid);border-radius:6px;font-family:DM Mono,monospace;background:#fff;color:var(--blue-mid);font-weight:700;" oninput="updateEpTotal()">
+<input type="number" min="0" step="0.01" id="ep-descuento" placeholder="0" style="width:120px;padding:4px 8px;font-size:13px;border:1px solid var(--blue-mid);border-radius:6px;font-family:DM Mono,monospace;background:#fff;color:var(--blue-mid);font-weight:700;" oninput="updateEpTotal()">
 <span style="font-size:12px;color:var(--blue-mid);">aplicado al total del pago</span>
 </div>
 </div>
 <div style="background:var(--purple-light);border-radius:var(--rs);padding:12px 14px;margin-bottom:13px;">
 <div style="font-size:11px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">9. 💜 Registrar abono</div>
 <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-<input type="number" min="0" step="1" id="ep-abono-monto" placeholder="Monto" style="width:100px;padding:4px 8px;font-size:13px;border:1px solid var(--purple);border-radius:6px;font-family:DM Mono,monospace;background:#fff;color:var(--purple);font-weight:700;" onchange="saveEpAbono()">
+<input type="number" min="0" step="0.01" id="ep-abono-monto" placeholder="Monto" style="width:100px;padding:4px 8px;font-size:13px;border:1px solid var(--purple);border-radius:6px;font-family:DM Mono,monospace;background:#fff;color:var(--purple);font-weight:700;" onchange="saveEpAbono()">
 <input type="date" id="ep-abono-fecha" style="min-width:120px;padding:4px 8px;font-size:12px;border:1px solid var(--purple);border-radius:6px;font-family:inherit;background:#fff;color:var(--purple);">
 <input type="text" id="ep-abono-nota" placeholder="Nota (ej: efectivo, OXXO…)" style="flex:1;min-width:100px;padding:4px 8px;font-size:12px;border:1px solid var(--purple);border-radius:6px;font-family:inherit;background:#fff;color:var(--purple);">
 <span style="font-size:11px;color:var(--purple);" id="ep-abono-resta"></span>
@@ -471,13 +484,13 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 <div class="fg">
 <label class="fl">11. Estado</label>
 <select class="fi fsel" id="ep-status">
-<option value="pendiente">⏳ Pendiente</option>
+<option value="pendiente"> Pendiente</option>
 <option value="parcial">🔄 Parcial</option>
 <option value="pagado">✅ Pagado</option>
 </select>
 </div>
 <div class="fg"><label class="fl">12. Notas</label><input class="fi" id="ep-notes" type="text" placeholder="Opcional"></div>
-<button class="btn-p" onclick="pagarDesdeBoton(document.getElementById('ep-lid').value,parseInt(document.getElementById('ep-idx').value))" style="margin-top:6px;background:var(--green);border-color:var(--green);">💳 Registrar abono</button>
+<button class="btn-p" onclick="pagarDesdeBoton(document.getElementById('ep-lid').value,parseInt(document.getElementById('ep-idx').value))" style="margin-top:6px;background:var(--green);border-color:var(--green);">💳 Registrar pago completo</button>
 <button class="btn-p" onclick="saveEditPay()" style="margin-top:6px;">💾 Guardar cambios</button>
 <button class="btn-o" onclick="closeModal('m-ep')" style="margin-top:8px;">Cerrar</button>
 </div>
@@ -497,8 +510,8 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 <div class="mbg" id="m-clist">
 <div class="modal">
 <div class="mhandle"></div>
-<button class="xbtn" onclick="closeModal('m-clist')"></button>
-<div class="mtitle"> Clientes</div>
+<button class="xbtn" onclick="closeModal('m-clist')">✕</button>
+<div class="mtitle">👥 Clientes</div>
 <div id="clist-body"></div>
 <button class="btn-p" style="margin-top:8px;" onclick="closeModal('m-clist');openClientModal()">+ Nuevo cliente</button>
 <button class="btn-o" onclick="closeModal('m-clist')">Cerrar</button>
@@ -515,8 +528,8 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 <div style="display:flex;align-items:center;gap:12px;margin-top:4px;">
 <div id="cfg-avatar-preview" style="width:60px;height:60px;border-radius:50%;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;flex-shrink:0;border:2px solid var(--border);">💼</div>
 <div style="flex:1;">
-<button class="btn-o" style="margin-top:0;font-size:13px;padding:10px;" onclick="document.getElementById('cfg-photo-input').click()">📷 Cambiar foto</button>
-<button class="btn-o" style="margin-top:6px;font-size:13px;padding:8px;color:var(--red);border-color:var(--red-light);" onclick="removeProfilePhoto()"> Quitar foto</button>
+<button class="btn-o" style="margin-top:0;font-size:13px;padding:10px;" onclick="document.getElementById('cfg-photo-input').click()"> Cambiar foto</button>
+<button class="btn-o" style="margin-top:6px;font-size:13px;padding:8px;color:var(--red);border-color:var(--red-light);" onclick="removeProfilePhoto()">✕ Quitar foto</button>
 </div>
 </div>
 <input type="file" id="cfg-photo-input" accept="image/*" style="display:none;" onchange="handleProfilePhoto(this)">
@@ -535,7 +548,7 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 <label class="fl" style="color:var(--purple);">Google OAuth Client ID</label>
 <input class="fi" id="cfg-drive-cid" type="text" placeholder="xxx.apps.googleusercontent.com" style="font-size:12px;">
 </div>
-<button class="btn-p" style="background:var(--purple);font-size:13px;padding:11px;" onclick="connectDrive()"> Conectar Google Drive</button>
+<button class="btn-p" style="background:var(--purple);font-size:13px;padding:11px;" onclick="connectDrive()">🔗 Conectar Google Drive</button>
 <div style="font-size:11px;color:var(--purple);margin-top:8px;line-height:1.6;">Para obtener tu Client ID: Google Cloud Console → APIs → Credenciales → OAuth 2.0 → Crear credencial → Aplicación web.</div>
 </div>
 <button class="btn-g" onclick="exportData()">📤 Exportar respaldo (.json)</button>
@@ -547,8 +560,8 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 <div class="mbg" id="m-alert">
 <div class="modal">
 <div class="mhandle"></div>
-<button class="xbtn" onclick="closeModal('m-alert')">✕</button>
-<div class="mtitle">🔔 Configurar alerta</div>
+<button class="xbtn" onclick="closeModal('m-alert')"></button>
+<div class="mtitle"> Configurar alerta</div>
 <div class="ep-info" id="al-header"></div>
 <input type="hidden" id="al-lid">
 <input type="hidden" id="al-idx">
@@ -579,13 +592,13 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 <div class="mbg" id="m-del-hist">
 <div class="modal">
 <div class="mhandle"></div>
-<button class="xbtn" onclick="closeModal('m-del-hist')">✕</button>
-<div class="mtitle">🗑 Borrar registro</div>
+<button class="xbtn" onclick="closeModal('m-del-hist')"></button>
+<div class="mtitle"> Borrar registro</div>
 <div class="ep-info" id="dh-info"></div>
 <input type="hidden" id="dh-pid">
 <div style="font-size:14px;color:var(--text);margin-bottom:20px;">¿Qué deseas hacer con este registro?</div>
-<button class="btn-p" style="background:var(--orange);" onclick="restoreHistEntry()"> Restaurar — regresar a pendiente</button>
-<button class="btn-d" onclick="permanentDeleteHist()"> Eliminar permanentemente</button>
+<button class="btn-p" style="background:var(--orange);" onclick="restoreHistEntry()">↩ Restaurar — regresar a pendiente</button>
+<button class="btn-d" onclick="permanentDeleteHist()">🗑 Eliminar permanentemente</button>
 <button class="btn-o" onclick="closeModal('m-del-hist')">Cancelar</button>
 </div>
 </div>
@@ -597,24 +610,15 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 </div>
 <div class="res-body">
 <div class="res-filters">
-<div class="res-filter">
-<label>Año</label>
-<select id="res-year" onchange="renderResumen()"><option value="">Todos</option></select>
-</div>
-<div class="res-filter">
-<label>Mes</label>
-<select id="res-month" onchange="renderResumen()">
+<div class="res-filter"><label>Año</label><select id="res-year" onchange="renderResumen()"><option value="">Todos</option></select></div>
+<div class="res-filter"><label>Mes</label><select id="res-month" onchange="renderResumen()">
 <option value="">Todos</option>
 <option value="01">Enero</option><option value="02">Febrero</option><option value="03">Marzo</option>
 <option value="04">Abril</option><option value="05">Mayo</option><option value="06">Junio</option>
 <option value="07">Julio</option><option value="08">Agosto</option><option value="09">Septiembre</option>
 <option value="10">Octubre</option><option value="11">Noviembre</option><option value="12">Diciembre</option>
-</select>
-</div>
-<div class="res-filter">
-<label>Cliente</label>
-<select id="res-client" onchange="renderResumen()"><option value="">Todos</option></select>
-</div>
+</select></div>
+<div class="res-filter"><label>Cliente</label><select id="res-client" onchange="renderResumen()"><option value="">Todos</option></select></div>
 <div class="res-filter" style="flex-basis:100%;min-width:100%;">
 <label style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;display:block;margin-bottom:6px;">Estado</label>
 <div class="res-status-checks">
@@ -672,9 +676,6 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 </div>
 </div>
 <script>
-// ============================================================
-// STATE & DB
-// ============================================================
 var S={owner:localStorage.getItem('pa_owner')||'',myphone:localStorage.getItem('pa_phone')||'',alertdays:parseInt(localStorage.getItem('pa_days')||'3'),tab:'cobrar',client:null,dtab:'deudas',_cl:null,_total:0,sortOrder:'urgencia'};
 function db_load(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch(e){return d;}}
 function db_save(k,v){localStorage.setItem(k,JSON.stringify(v));}
@@ -685,20 +686,14 @@ get payments(){return db_load('pa_payments',[]);},set payments(v){db_save('pa_pa
 get overrides(){return db_load('pa_ov',{});},set overrides(v){db_save('pa_ov',v);}
 };
 var COLORS=['#2563B0','#16A34A','#DC2626','#9333EA','#EA580C','#0891B2','#65A30D','#DB2777'];
-// ============================================================
-// DATE UTILS
-// ============================================================
 function p2(n){return String(n).padStart(2,'0');}
 function lastDay(y,m){return new Date(y,m,0).getDate();}
 function parseDate(s){return new Date(s+'T12:00:00');}
 function dateStr(d){return d.getFullYear()+'-'+p2(d.getMonth()+1)+'-'+p2(d.getDate());}
 function todayStr(){return dateStr(new Date());}
 function fmtDate(d){if(!d)return '';return parseDate(d).toLocaleDateString('es-MX',{day:'numeric',month:'short',year:'2-digit'});}
-function fmt(n){return '$'+Math.round(n||0).toLocaleString('es-MX');}
+function fmt(n){return '$'+(n||0).toFixed(2);}
 function daysBetween(a,b){return Math.round((parseDate(b)-parseDate(a))/86400000);}
-// ============================================================
-// CALC DATE FROM FIRST DATE
-// ============================================================
 function calcDateFromFirst(firstDate,freq,idx){
 if(!firstDate)return todayStr();
 var d=parseDate(firstDate);
@@ -720,9 +715,6 @@ return cy+'-'+p2(cm)+'-'+p2(lastDay(cy,cm));
 }
 return firstDate;
 }
-// ============================================================
-// SUGGEST FIRST DATE
-// ============================================================
 function suggestFirstDate(freq){
 var d=new Date();d.setHours(12);
 if(freq==='daily'||freq==='daily_meter'||freq==='daily_percent'||freq==='daily_fixed')return dateStr(d);
@@ -743,9 +735,6 @@ return y2+'-'+p2(m2)+'-'+p2(lastDay(y2,m2));
 }
 return dateStr(d);
 }
-// ============================================================
-// COMPUTE PRICE BREAKDOWN
-// ============================================================
 function computePriceBreakdown(monto,pct,freq,n,firstDate){
 var today=todayStr();
 var base=monto;
@@ -757,15 +746,12 @@ var stdPeriod=freq==='weekly'?7:freq==='biweekly'?15:30;
 if(days>stdPeriod){
 extraDays=days-stdPeriod;
 var dailyRate=(pct/100)/stdPeriod;
-proration=Math.round(base*dailyRate*extraDays*100)/100;
+proration=base*dailyRate*extraDays;
 }
 }
 var total=base+interest+proration;
 return{base:base,interest:interest,proration:proration,extraDays:extraDays,total:total,perPay:total/n};
 }
-// ============================================================
-// AMOUNTS FOR LOAN
-// ============================================================
 function amountsForLoan(loan){
 var n=loan.num_pagos||1;
 if(loan.frecuencia==='daily_meter'){
@@ -774,14 +760,14 @@ if(ov0.meter_frozen&&loan.meter_start&&loan.daily_charge){
 var mEndOv=ov0.meter_end_override||loan.meter_end||'';
 if(mEndOv&&mEndOv>=loan.meter_start){
 var diasCongelados=daysBetween(loan.meter_start,mEndOv)+1;
-return [Math.round((loan.monto+loan.daily_charge*diasCongelados)*100)/100];
+return [loan.monto+loan.daily_charge*diasCongelados];
 }
 }
 if(loan.meter_start&&loan.daily_charge){
 var hoy=new Date();hoy.setHours(12,0,0,0);
 var inicio=new Date(loan.meter_start+'T12:00:00');
 var diasTranscurridos=Math.max(1,Math.floor((hoy-inicio)/86400000)+1);
-var totalReal=Math.round((loan.monto+loan.daily_charge*diasTranscurridos)*100)/100;
+var totalReal=loan.monto+loan.daily_charge*diasTranscurridos;
 return [totalReal];
 }
 return [loan.monto+(loan.daily_charge||0)];
@@ -793,7 +779,7 @@ var mEndOv=ov0.dpct_end_override||loan.dpct_end||'';
 if(mEndOv&&mEndOv>=loan.dpct_start){
 var diasCongelados=daysBetween(loan.dpct_start,mEndOv)+1;
 var interesCongelado=loan.monto*(loan.dpct_rate/100)*diasCongelados;
-return [Math.round((loan.monto+interesCongelado)*100)/100];
+return [loan.monto+interesCongelado];
 }
 }
 if(loan.dpct_start&&loan.dpct_rate){
@@ -801,21 +787,18 @@ var hoy=new Date();hoy.setHours(12,0,0,0);
 var inicio=new Date(loan.dpct_start+'T12:00:00');
 var diasTranscurridos=Math.max(1,Math.floor((hoy-inicio)/86400000)+1);
 var interesReal=loan.monto*(loan.dpct_rate/100)*diasTranscurridos;
-var totalReal=Math.round((loan.monto+interesReal)*100)/100;
+var totalReal=loan.monto+interesReal;
 return [totalReal];
 }
 return [loan.monto];
 }
 var total=(loan.monto||0)*(1+(loan.interes||0)/100)+(loan.proration||0);
-var perPay=Math.floor((total/n)*100)/100;
+var perPay=total/n;
 var arr=[];
 for(var j=0;j<n-1;j++)arr.push(perPay);
-arr.push(Math.round((total-perPay*(n-1))*100)/100);
+arr.push(total-perPay*(n-1));
 return arr;
 }
-// ============================================================
-// PIN
-// ============================================================
 function checkPin(){
 var saved=localStorage.getItem('pa_pin')||'';
 var entered=(document.getElementById('pin-input').value||'').trim();
@@ -823,9 +806,6 @@ if(!saved){document.getElementById('pin-screen').classList.remove('open');startA
 if(entered===saved){document.getElementById('pin-screen').classList.remove('open');document.getElementById('pin-error').style.display='none';document.getElementById('pin-input').value='';startApp();}
 else{document.getElementById('pin-error').style.display='';document.getElementById('pin-input').value='';document.getElementById('pin-input').focus();}
 }
-// ============================================================
-// FAB BACK
-// ============================================================
 function updateFabBack(){
 var btn=document.getElementById('fab-back');
 if(!btn)return;
@@ -861,9 +841,6 @@ document.getElementById('setup-screen').classList.remove('open');
 document.getElementById('hdr-sub').textContent=S.owner;
 renderMain();
 }
-// ============================================================
-// RENDER MAIN
-// ============================================================
 function renderMain(){
 var clients=DB.clients,loans=DB.loans,tab=S.tab;
 var filtered;
@@ -915,7 +892,7 @@ var html='<div class="summary"><div class="summary-amt">'+fmt(tot)+'</div>'
 +'<option value="fecha_desc"'+(S.sortOrder==='fecha_desc'?' selected':'')+'>📅 Fecha ↓ reciente primero</option>'
 +'</select></div>':'')
 +'<div class="srch"><input placeholder="Buscar cliente..." oninput="filterList(this.value)"></div><div class="list" id="cli-list">';
-if(!entries.length){html+='<div class="empty"><div class="empty-ico">'+(tab==='historico'?'':'💰')+'</div><div>'+(tab==='historico'?'Sin historial de pagos aún':'Sin préstamos activos')+'</div></div>';}
+if(!entries.length){html+='<div class="empty"><div class="empty-ico">'+(tab==='historico'?'📋':'💰')+'</div><div>'+(tab==='historico'?'Sin historial de pagos aún':'Sin préstamos activos')+'</div></div>';}
 else{
 entries.forEach(function(e){
 var name=e.cl?e.cl.nombre:'Sin nombre',cid=e.cl?e.cl.id:e.loans[0].cliente_id;
@@ -940,9 +917,6 @@ document.getElementById('mc').innerHTML=html;
 }
 function filterList(q){document.querySelectorAll('.card').forEach(function(c){var n=c.querySelector('.cn');if(n)c.style.display=n.textContent.toLowerCase().includes(q.toLowerCase())?'':'none';});}
 function switchTab(tab,el){S.tab=tab;document.querySelectorAll('.tabs .tab').forEach(function(t){t.classList.remove('active');});el.classList.add('active');renderMain();}
-// ============================================================
-// COBRAR HOY
-// ============================================================
 function openCobrarHoy(){renderCobrarHoy();document.getElementById('cobrar-view').classList.add('open');updateFabBack();}
 function sendWACobrar(lid,idx,nombreEnc,phone){
 var nombre=decodeURIComponent(nombreEnc);
@@ -1039,9 +1013,6 @@ html+='<div class="pi '+(diff<0?'ov':diff===0?'ov':'wa')+'" style="margin-bottom
 document.getElementById('cobrar-list').innerHTML=html;
 }
 function navTo(sec,el){document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('active');});el.classList.add('active');if(sec==='clientes')openClientList();else if(sec==='propuestas')openProp();else if(sec==='resumen')openResumen();else if(sec==='cobrar-hoy')openCobrarHoy();}
-// ============================================================
-// DETAIL
-// ============================================================
 function openDetail(cid){
 S.client=String(cid);S.dtab='deudas';
 var cl=DB.clients.find(function(c){return String(c.id)===String(cid);});
@@ -1108,14 +1079,14 @@ var descuento=p.descuento||0;
 var isPartial=p.status==='parcial';
 var pc=isPartial?' partial':u==='overdue'?' ov':u==='warning'?' wa':'';
 var ibg=isPartial?'var(--orange-light)':u==='overdue'?'var(--red-light)':u==='warning'?'var(--orange-light)':'var(--blue-light)';
-var ico=isPartial?'½':u==='overdue'?'':'📋';
+var ico=isPartial?'½':u==='overdue'?'⚠':'📋';
 var dc='pi-date'+(u==='overdue'?' red':u==='warning'?' orange':'');
 var atr=calcAtraso(loan,i,p);
 var totalFinal=Math.max(0,Math.round((p.amount+atr.monto-descuento)*100)/100);
 var restante=Math.max(0,totalFinal-abonado);
 var amtColor=u==='overdue'?'var(--red)':u==='warning'?'var(--orange)':'var(--text)';
 var amtHtml='<div style="text-align:right;"><div class="pi-amt" style="color:'+amtColor+';">'+fmt(restante)+'</div>'+(abonado>0?'<div style="font-size:10px;color:var(--muted);">de '+fmt(totalFinal)+'</div>':'')+'</div>';
-var pill=isPartial?'<span class="pill p-orange">🔄 '+fmt(abonado)+' abonado · resta '+fmt(restante)+'</span>':u==='overdue'?'<span class="pill p-red">⚠ Vencido</span>':u==='warning'?'<span class="pill p-orange">🕐 Próximo</span>':'<span class="pill p-blue">Pendiente</span>';
+var pill=isPartial?'<span class="pill p-orange">🔄 '+fmt(abonado)+' abonado · resta '+fmt(restante)+'</span>':u==='overdue'?'<span class="pill p-red"> Vencido</span>':u==='warning'?'<span class="pill p-orange">🕐 Próximo</span>':'<span class="pill p-blue">Pendiente</span>';
 var loan_n=loan.num_pagos||1;
 var ov_card=(DB.overrides[loan.id]&&DB.overrides[loan.id][i])||{};
 var pay_cap=ov_card.capital!==undefined?ov_card.capital:Math.round((loan.monto||0)/loan_n*100)/100;
@@ -1147,14 +1118,14 @@ var dias=Math.max(1,Math.floor((hoy-ini)/86400000)+1);
 var interesDia=loan.monto*(loan.dpct_rate/100);
 var promesa=loan.dpct_end?'Promesa: '+fmtDate(loan.dpct_end):'';
 var pasado=loan.dpct_end&&todayStr()>loan.dpct_end;
-return '<div style="font-size:11px;margin-top:2px;"><span style="color:var(--purple);font-weight:600;">⏱ '+dias+' días × '+loan.dpct_rate+'% = '+fmt(interesDia*dias)+'</span>'+(promesa?'<span style="color:'+(pasado?'var(--red)':'var(--muted)')+';margin-left:6px;">'+(pasado?' ':'')+''+promesa+'</span>':'')+'</div>';
+return '<div style="font-size:11px;margin-top:2px;"><span style="color:var(--purple);font-weight:600;">⏱ '+dias+' días × '+loan.dpct_rate+'% = '+fmt(interesDia*dias)+'</span>'+(promesa?'<span style="color:'+(pasado?'var(--red)':'var(--muted)')+';margin-left:6px;">'+(pasado?'⚠ ':'')+''+promesa+'</span>':'')+'</div>';
 })():'')
 +(loan.fecha_prestamo||loan.fecha_creacion?'<div style="font-size:10px;color:var(--muted);margin-top:1px;">📅 Inicio: '+fmtDate(loan.fecha_prestamo||loan.fecha_creacion)+'</div>':'')
 +'<div class="'+dc+'">'+fmtDate(p.date)+'</div>'+pill+'</div>'+amtHtml+'</div>'
 +breakdownHtml
 +'<div class="pi-actions">'
 +'<button class="pi-btn" style="background:var(--green-light);color:var(--green);font-weight:700;" onclick="event.stopPropagation();pagarDesdeBoton(\''+loan.id+'\','+i+')">💳 Pagar</button>'
-+'<button class="pi-btn pbr" onclick="event.stopPropagation();deletePay(\''+loan.id+'\','+i+')">🗑 Eliminar</button>'
++'<button class="pi-btn pbr" onclick="event.stopPropagation();deletePay(\''+loan.id+'\','+i+')"> Eliminar</button>'
 +'<button class="pi-btn pbd" onclick="event.stopPropagation();openAlertModal(\''+loan.id+'\','+i+',\''+p.date+'\')">'+(hasAlert(loan.id,i)?'🔔 Alerta ✓':'🔔 Alerta')+'</button>'
 +'</div></div>';
 });
@@ -1213,9 +1184,6 @@ if(!cl||(cl.telefono||'').replace(/\D/g,'').length<10){showNotif('Sin teléfono 
 var msg='Hola '+cl.nombre+', te recuerdo que tienes un saldo pendiente de '+fmt(S._total)+'. Te pido que te pongas en contacto para coordinar tu pago. Gracias.';
 window.location.href='sms:'+cl.telefono+'?body='+encodeURIComponent(msg);
 }
-// ============================================================
-// SCHEDULE & CALCS
-// ============================================================
 function getSched(loan){
 var ov=DB.overrides[loan.id]||{};
 var n=loan.num_pagos||1;
@@ -1249,7 +1217,7 @@ var sched=getSched(loan);var total=0;
 sched.forEach(function(p,idx){
 if(p.status==='pagado') return;
 var a=calcAtraso(loan,idx,p);
-total+=Math.max(0,Math.round((p.amount+a.monto-(p.descuento||0)-(p.abonado||0))*100)/100);
+total+=Math.max(0,p.amount-(p.abonado||0))+a.monto-Math.max(0,p.descuento||0);
 });
 return total;
 }
@@ -1262,9 +1230,6 @@ function urgency(loans){var w='ok';loans.forEach(function(l){getSched(l).forEach
 function dateUrg(ds,status){if(status==='pagado')return 'ok';var days=S.alertdays||3;var now=new Date();now.setHours(0,0,0,0);var due=parseDate(ds);var diff=Math.floor((due-now)/86400000);if(diff<0)return 'overdue';if(diff<=days)return 'warning';return 'ok';}
 function nextDue(loans){var dates=[];loans.forEach(function(l){getSched(l).forEach(function(p){if(p.status!=='pagado')dates.push(p.date);});});if(!dates.length)return null;dates.sort();return fmtDate(dates[0]);}
 function nextDueRaw(loans){var dates=[];loans.forEach(function(l){getSched(l).forEach(function(p){if(p.status!=='pagado')dates.push(p.date);});});if(!dates.length)return null;dates.sort();return dates[0];}
-// ============================================================
-// LOAN CRUD
-// ============================================================
 function loanFreqChange(){
 var freq=document.getElementById('l-freq').value;
 var isMeter=(freq==='daily_meter');
@@ -1280,13 +1245,11 @@ document.getElementById('l-daily-dates-wrap').style.display='none';
 if(!isMeter&&!isDpct&&!isFixed) document.getElementById('l-firstdate').value=suggestFirstDate(freq);
 if(isMeter){
 document.getElementById('l-meter-start').value=todayStr();
-document.getElementById('l-meter-end').value='';
-document.getElementById('l-meter-end').min=todayStr();
+document.getElementById('l-meter-end').value=todayStr();
 }
 if(isDpct){
 document.getElementById('l-dpct-start').value=todayStr();
-document.getElementById('l-dpct-end').value='';
-document.getElementById('l-dpct-end').min=todayStr();
+document.getElementById('l-dpct-end').value=todayStr();
 document.getElementById('l-dpct-rate').value='2';
 }
 if(isFixed){
@@ -1333,63 +1296,43 @@ html+='<div class="fg" style="margin-bottom:8px;display:flex;align-items:center;
 }
 container.innerHTML=html;
 }
-function meterStartChanged(){
-var start=document.getElementById('l-meter-start').value;
-var endEl=document.getElementById('l-meter-end');
-if(start){endEl.min=start;if(endEl.value&&endEl.value<start) endEl.value=start;}
-calcLoanPreview();
-}
-function dpctStartChanged(){
-var start=document.getElementById('l-dpct-start').value;
-var endEl=document.getElementById('l-dpct-end');
-if(start){endEl.min=start;if(endEl.value&&endEl.value<start) endEl.value=start;}
-calcLoanPreview();
-}
+function meterStartChanged(){calcLoanPreview();}
+function dpctStartChanged(){calcLoanPreview();}
 function calcLoanPreview(){
 var amt=parseFloat(document.getElementById('l-amount').value)||0;
-var pct=parseFloat(document.getElementById('l-interest').value)||0;
-var n=parseInt(document.getElementById('l-npay').value)||1;
 var freq=document.getElementById('l-freq').value;
-var fd=document.getElementById('l-firstdate').value;
 if(!amt){document.getElementById('l-prev').textContent='Ingresa el monto';return;}
 if(freq==='daily_meter'){
-var mAmt=parseFloat(document.getElementById('l-amount').value)||0;
+var mAmt=amt;
 var mStart=document.getElementById('l-meter-start').value;
 var mEnd=document.getElementById('l-meter-end').value;
-var dailyCharge=Math.round(mAmt/500)*15;
-document.getElementById('l-meter-daily').textContent=dailyCharge.toLocaleString('es-MX');
-var d2=document.getElementById('l-meter-daily2');if(d2)d2.textContent=dailyCharge.toLocaleString('es-MX');
+var dailyCharge=Math.ceil(mAmt/500)*15;
+document.getElementById('l-meter-daily').textContent=dailyCharge.toFixed(2);
 var txt='Capital: '+fmt(mAmt)+'\nCobro por día: '+fmt(dailyCharge)+' ($15 x cada $500)';
 if(mStart&&mEnd&&mEnd>=mStart){
 var dias=daysBetween(mStart,mEnd)+1;
 var interesTotal=dailyCharge*dias;
 var total=mAmt+interesTotal;
-txt+='\nDías (día 1='+fmtDate(mStart)+' → '+fmtDate(mEnd)+'): '+dias;
-txt+='\nInterés acumulado: '+fmt(interesTotal);
-txt+='\nTotal a cobrar: '+fmt(total);
+txt+='\nDías: '+dias+'\nInterés acumulado: '+fmt(interesTotal)+'\nTotal: '+fmt(total);
 document.getElementById('l-meter-days-info').style.display='';
-document.getElementById('l-meter-days-info').textContent='Día 1: '+fmtDate(mStart)+' → '+fmtDate(mEnd)+' = '+dias+' días · Interés: '+fmt(interesTotal)+' · Total: '+fmt(total);
+document.getElementById('l-meter-days-info').textContent='Día 1: '+fmtDate(mStart)+' → '+fmtDate(mEnd)+' = '+dias+' días · Total: '+fmt(total);
 }else{document.getElementById('l-meter-days-info').style.display='none';}
 document.getElementById('l-prev').textContent=txt;
 return;
 }
 if(freq==='daily_percent'){
-var dAmt=parseFloat(document.getElementById('l-amount').value)||0;
+var dAmt=amt;
 var dRate=parseFloat(document.getElementById('l-dpct-rate').value)||0;
 var dStart=document.getElementById('l-dpct-start').value;
 var dEnd=document.getElementById('l-dpct-end').value;
 document.getElementById('l-dpct-pct').textContent=dRate;
-var warningDpct=dRate>10?'\n⚠ Porcentaje diario alto: '+dRate+'% diario = '+Math.round(dRate*30)+'% mensual aprox.':'';
-var txt='Capital: '+fmt(dAmt)+'\nPorcentaje diario: '+dRate+'%'+warningDpct;
+var txt='Capital: '+fmt(dAmt)+'\nPorcentaje diario: '+dRate+'%';
 if(dStart&&dEnd&&dEnd>=dStart){
 var dias=daysBetween(dStart,dEnd)+1;
 var interesDiario=dAmt*(dRate/100);
 var interesTotal=interesDiario*dias;
 var total=dAmt+interesTotal;
-txt+='\nDías (día 1='+fmtDate(dStart)+' → '+fmtDate(dEnd)+'): '+dias;
-txt+='\nInterés diario: '+fmt(interesDiario);
-txt+='\nInterés acumulado: '+fmt(interesTotal);
-txt+='\nTotal a cobrar: '+fmt(total);
+txt+='\nDías: '+dias+'\nInterés diario: '+fmt(interesDiario)+'\nInterés acumulado: '+fmt(interesTotal)+'\nTotal: '+fmt(total);
 document.getElementById('l-dpct-days-info').style.display='';
 document.getElementById('l-dpct-days-info').textContent='Día 1: '+fmtDate(dStart)+' → '+fmtDate(dEnd)+' = '+dias+' días · Interés diario: '+fmt(interesDiario)+' · Total: '+fmt(total);
 }else{document.getElementById('l-dpct-days-info').style.display='none';}
@@ -1397,22 +1340,19 @@ document.getElementById('l-prev').textContent=txt;
 return;
 }
 if(freq==='daily_fixed'){
-var dAmt=parseFloat(document.getElementById('l-amount').value)||0;
+var dAmt=amt;
 var dPct=parseFloat(document.getElementById('l-interest').value)||0;
 var dPay=document.getElementById('l-fixed-paydate').value;
-var dInter=Math.round(dAmt*dPct/100*100)/100;
+var dInter=dAmt*dPct/100;
 var dTotal=dAmt+dInter;
-if(dPay){
-var dDays=daysBetween(todayStr(),dPay)+1;
-document.getElementById('l-fixed-days-info').style.display='';
-document.getElementById('l-fixed-days-info').textContent='Días desde hoy hasta '+fmtDate(dPay)+': '+dDays+' días';
-}else{document.getElementById('l-fixed-days-info').style.display='none';}
-document.getElementById('l-prev').textContent='Capital: '+fmt(dAmt)+'\nInterés ('+dPct+'%): '+fmt(dInter)+'\nTotal a pagar: '+fmt(dTotal)+(dPay?' · Fecha: '+fmtDate(dPay):'');
+document.getElementById('l-prev').textContent='Capital: '+fmt(dAmt)+'\nInterés ('+dPct+'%): '+fmt(dInter)+'\nTotal: '+fmt(dTotal)+(dPay?' · Fecha: '+fmtDate(dPay):'');
 return;
 }
+var pct=parseFloat(document.getElementById('l-interest').value)||0;
+var n=parseInt(document.getElementById('l-npay').value)||1;
+var fd=document.getElementById('l-firstdate').value;
 var res=computePriceBreakdown(amt,pct,freq,n,fd);
-var interestTotal=Math.round((res.interest+res.proration)*100)/100;
-var txt='Capital: '+fmt(res.base)+'\nInterés: '+fmt(interestTotal)+'\nTotal: '+fmt(res.total)+'\nPago: '+fmt(res.total/n);
+var txt='Capital: '+fmt(res.base)+'\nInterés: '+fmt(res.interest)+'\nTotal: '+fmt(res.total)+'\nPago: '+fmt(res.total/n);
 document.getElementById('l-prev').textContent=txt;
 }
 function saveLoan(){
@@ -1425,11 +1365,11 @@ var loanId='l'+Date.now();
 var loans=DB.loans;
 if(freq==='daily_meter'){
 var mStart=document.getElementById('l-meter-start').value;
-if(!mStart){showNotif('Selecciona la fecha de inicio del préstamo');return;}
-var dailyCharge=Math.round(amt/500)*15;
+if(!mStart){showNotif('Selecciona la fecha de inicio');return;}
+var dailyCharge=Math.ceil(amt/500)*15;
 var mEnd=document.getElementById('l-meter-end').value;
-if(!mEnd){showNotif('Selecciona la fecha promesa de pago');return;}
-if(mEnd<mStart){showNotif('La fecha promesa debe ser igual o posterior al inicio');return;}
+if(!mEnd){showNotif('Selecciona la fecha promesa');return;}
+if(mEnd<mStart){showNotif('La fecha promesa debe ser posterior al inicio');return;}
 var diasPactados=daysBetween(mStart,mEnd)+1;
 var interesAcum=dailyCharge*diasPactados;
 var total=amt+interesAcum;
@@ -1453,12 +1393,11 @@ DB.loans=loans;
 saveOv(loanId,0,{date:dEnd,amount:total,concept:con+' ('+diasPactados+' días × '+dRate+'%)'});
 }else if(freq==='daily_fixed'){
 var pct=parseFloat(document.getElementById('l-interest').value)||0;
-var n=1;
 var fd=document.getElementById('l-fixed-paydate').value;
 if(!fd){showNotif('Selecciona la fecha de pago');return;}
-var fixedInter=Math.round(amt*pct/100*100)/100;
+var fixedInter=amt*pct/100;
 var fixedTotal=amt+fixedInter;
-loans.push({id:loanId,cliente_id:cid,concepto:con,monto:amt,interes:pct,num_pagos:n,frecuencia:'daily_fixed',first_date:fd,proration:0,fecha_creacion:todayStr(),fecha_prestamo:todayStr()});
+loans.push({id:loanId,cliente_id:cid,concepto:con,monto:amt,interes:pct,num_pagos:1,frecuencia:'daily_fixed',first_date:fd,proration:0,fecha_creacion:todayStr(),fecha_prestamo:todayStr()});
 DB.loans=loans;
 saveOv(loanId,0,{date:fd,amount:fixedTotal});
 }else{
@@ -1470,14 +1409,10 @@ var res2=computePriceBreakdown(amt,pct2,freq,n2,fd2);
 loans.push({id:loanId,cliente_id:cid,concepto:con,monto:amt,interes:pct2,num_pagos:n2,frecuencia:freq,first_date:fd2,proration:res2.proration,fecha_creacion:todayStr(),fecha_prestamo:todayStr()});
 DB.loans=loans;
 }
-autoBackup();
 showNotif('✓ Préstamo creado');
 closeModal('m-loan');
 renderMain();
 }
-// ============================================================
-// EDIT PAY
-// ============================================================
 function refreshDetailHeader(){
 if(!S.client)return;
 var loans=DB.loans.filter(function(l){return String(l.cliente_id)===String(S.client)&&!isLiq(l);});
@@ -1606,7 +1541,7 @@ var interesHoy=Math.round(interesDiario*diasHoy*100)/100;
 var totalHoy=Math.round((capital+interesHoy)*100)/100;
 var pasado=dEnd&&todayStr()>dEnd;
 var infoEl=document.getElementById('ep-dpct-info');
-infoEl.innerHTML='Porcentaje diario: <strong>'+rate+'%</strong> · Interés/día: <strong>'+fmt(interesDiario)+'</strong> · '+(dEnd?'Promesa: <strong>'+fmtDate(dEnd)+'</strong> ('+diasPactados+' días) · Total pactado: <strong>'+fmt(totalPactado)+'</strong>':'Selecciona fecha promesa')+(pasado?'<br><span style="color:var(--red);font-weight:700;">⚠ Fecha promesa vencida — hoy son '+diasHoy+' días = '+fmt(totalHoy)+'</span>':'');
+infoEl.innerHTML='Porcentaje diario: <strong>'+rate+'%</strong> · Interés/día: <strong>'+fmt(interesDiario)+'</strong> · '+(dEnd?'Promesa: <strong>'+fmtDate(dEnd)+'</strong> ('+diasPactados+' días) · Total pactado: <strong>'+fmt(totalPactado)+'</strong>':'Selecciona fecha promesa')+(pasado?'<br><span style="color:var(--red);font-weight:700;"> Fecha promesa vencida — hoy son '+diasHoy+' días = '+fmt(totalHoy)+'</span>':'');
 var calcEl=document.getElementById('ep-dpct-calc');
 if(frozen){calcEl.innerHTML='🔒 Congelado en <strong>'+fmt(totalPactado)+'</strong>';}
 else{calcEl.innerHTML='Total a cobrar hoy: <strong>'+fmt(totalHoy)+'</strong>';}
@@ -1623,7 +1558,7 @@ else{btn.textContent='🔒 Congelar cálculo';btn.style.background='var(--orange
 function updateEpDpctFreezeBtn(frozen){
 var btn=document.getElementById('ep-dpct-freeze-btn');
 if(frozen){btn.textContent='🔓 Descongelar';btn.style.background='var(--green)';btn.style.color='#fff';document.getElementById('ep-dpct-end').style.borderColor='var(--green)';}
-else{btn.textContent='🔒 Congelar cálculo';btn.style.background='var(--purple)';btn.style.color='#fff';document.getElementById('ep-dpct-end').style.borderColor='';}
+else{btn.textContent=' Congelar cálculo';btn.style.background='var(--purple)';btn.style.color='#fff';document.getElementById('ep-dpct-end').style.borderColor='';}
 }
 function toggleEpMeterFreeze(){
 var lid=document.getElementById('ep-lid').value;
@@ -1853,7 +1788,7 @@ var monto=parseFloat(prompt(promptMsg));
 if(!monto || isNaN(monto) || monto <= 0){ return; }
 monto = Math.round(monto*100)/100;
 if(monto > Math.round(deudaTotal*100)/100 + 0.009){
-showNotif('⚠ El monto ingresado ('+fmt(monto)+') es mayor a la deuda total ('+fmt(deudaTotal)+'). No se puede registrar.');
+showNotif(' El monto ingresado ('+fmt(monto)+') es mayor a la deuda total ('+fmt(deudaTotal)+'). No se puede registrar.');
 return;
 }
 var fecha = todayStr();
@@ -1927,15 +1862,12 @@ var i=idx;
 while(remaining>0.009&&i<sched.length){
 var p=sched[i];
 if(p.status==='pagado'){i++;continue;}
-var atrI=calcAtraso(loan,i,p);
-var descI=p.descuento||0;
-var totalI=Math.max(0,Math.round((p.amount+atrI.monto-descI)*100)/100);
-var restante=Math.max(0,Math.round((totalI-(p.abonado||0))*100)/100);
+var restante=Math.max(0,p.amount-(p.abonado||0));
 var toApply=Math.min(remaining,restante);
 if(toApply>0.009){
 payments.push({id:'a'+Date.now()+'x'+i,prestamo_id:lid,cliente_id:S.client,monto:Math.round(toApply*100)/100,fecha:date,notas:(i===idx?(document.getElementById('ep-abono-nota')&&document.getElementById('ep-abono-nota').value.trim()||'Abono'):'Excedente → Pago '+(i+1)),estado:'abono',pago_index:i});
 var newAbonado=(p.abonado||0)+toApply;
-var newStatus=newAbonado>=totalI-0.009?'pagado':'parcial';
+var newStatus=newAbonado>=p.amount-0.009?'pagado':'parcial';
 saveOv(lid,i,{status:newStatus});
 }
 remaining-=toApply;
@@ -2010,9 +1942,6 @@ showNotifSuccess((cl?cl.nombre:'El cliente')+' no tiene mas adeudos ✅',3000);
 setTimeout(function(){closeDetail();renderMain();},3200);
 }else{refreshDetailHeader();renderDPay();renderMain();}
 }
-// ============================================================
-// CLIENT
-// ============================================================
 function openClientModal(){document.getElementById('mc-title').textContent='Nuevo cliente';document.getElementById('c-name').value='';document.getElementById('c-phone').value='';document.getElementById('c-notes').value='';openModal('m-client');}
 function saveClient(){
 var name=document.getElementById('c-name').value.trim();
@@ -2033,14 +1962,11 @@ else{_openLoanFromProp();setTimeout(function(){var sel=document.getElementById('
 }
 function openClientList(){
 var clients=DB.clients;var html='';
-if(!clients.length){html='<div class="empty"><div class="empty-ico"></div><div>Sin clientes</div></div>';}
+if(!clients.length){html='<div class="empty"><div class="empty-ico">👥</div><div>Sin clientes</div></div>';}
 else{clients.forEach(function(c){var col=COLORS[Math.abs(hashStr(c.nombre))%COLORS.length];var ini=c.nombre.split(' ').slice(0,2).map(function(w){return w[0]||'';}).join('').toUpperCase();html+='<div class="card" style="margin-bottom:8px;"><div class="ava" style="background:'+col+'22;color:'+col+'">'+ini+'</div><div class="ci"><div class="cn">'+c.nombre+'</div><div class="cd">'+(c.telefono||'Sin teléfono')+'</div></div></div>';});}
 document.getElementById('clist-body').innerHTML=html;
 openModal('m-clist');
 }
-// ============================================================
-// PROPUESTAS
-// ============================================================
 function openProp(){
 var clients=DB.clients.slice().sort(function(a,b){return a.nombre.localeCompare(b.nombre,'es');});
 var sel=document.getElementById('pr-client');
@@ -2067,8 +1993,7 @@ document.getElementById('pr-npay-wrap').style.display=(isMeter||isDpct||isFixed)
 document.getElementById('pr-firstdate-wrap').style.display=(isMeter||isDpct||isFixed)?'none':'';
 document.getElementById('pr-paydate-wrap').style.display=isFixed?'':'none';
 document.getElementById('pr-meter-wrap').style.display=(isMeter||isDpct)?'':'none';
-var dpctRateWrap=document.getElementById('pr-dpct-rate-wrap');
-if(dpctRateWrap) dpctRateWrap.style.display=isDpct?'':'none';
+document.getElementById('pr-dpct-rate-wrap').style.display=isDpct?'':'none';
 if(!isMeter&&!isDpct&&!isFixed){
 var sfFreq=freq==='daily_fixed'?'daily':freq;
 document.getElementById('pr-firstdate').value=suggestFirstDate(sfFreq);
@@ -2076,8 +2001,7 @@ document.getElementById('pr-firstdate').value=suggestFirstDate(sfFreq);
 if(isFixed) document.getElementById('pr-paydate').value='';
 if(isMeter||isDpct){
 document.getElementById('pr-meter-start').value=todayStr();
-document.getElementById('pr-meter-end').value='';
-document.getElementById('pr-meter-end').min=todayStr();
+document.getElementById('pr-meter-end').value=todayStr();
 }
 var defaults={weekly:40,biweekly:50,monthly:65};
 if(defaults[freq]!==undefined) document.getElementById('pr-interest').value=defaults[freq];
@@ -2108,24 +2032,24 @@ var di=document.getElementById('pr-days-info');
 di.textContent='Días desde hoy hasta la fecha de pago: '+fixedDays+' días';
 di.style.display='';
 }else if(isFixed){var di=document.getElementById('pr-days-info');di.style.display='none';}
-var fixedInter=Math.round(amt*pct/100*100)/100;
+var fixedInter=amt*pct/100;
 var fixedTotal=amt+fixedInter;
 var res=computePriceBreakdown(amt,pct,isMeter?'daily':freq,n,fd);
 var amounts=[];
 if(isMeter||isDpct){}
 else if(isFixed){amounts=[fixedTotal];}
-else{var perPay=Math.floor((res.total/n)*100)/100;for(var j=0;j<n-1;j++)amounts.push(perPay);amounts.push(Math.round((res.total-perPay*(n-1))*100)/100);}
+else{var perPay=res.total/n;for(var j=0;j<n-1;j++)amounts.push(perPay);amounts.push(res.total-perPay*(n-1));}
 var dates=isFixed&&paydate?[paydate]:(fd?[fd]:[]);
 if(!isMeter&&!isDpct&&!isFixed) for(var k=1;k<n;k++) dates.push(calcDateFromFirst(fd,freq,k));
-var dc=Math.round(amt/500)*15;
+var dc=Math.ceil(amt/500)*15;
 var prMeterStart=(isMeter||isDpct)?document.getElementById('pr-meter-start').value:'';
 var prMeterEnd=(isMeter||isDpct)?document.getElementById('pr-meter-end').value:'';
 var mDiasPactados=1;
 if((isMeter||isDpct)&&prMeterStart&&prMeterEnd&&prMeterEnd>=prMeterStart){mDiasPactados=daysBetween(prMeterStart,prMeterEnd)+1;}
-var mTotalPactado=isMeter?Math.round((amt+dc*mDiasPactados)*100)/100:0;
+var mTotalPactado=isMeter?amt+dc*mDiasPactados:0;
 var dpctRate=isDpct?(parseFloat(document.getElementById('pr-dpct-rate').value)||0):0;
-var dpctInteresDiario=isDpct?Math.round(amt*(dpctRate/100)*100)/100:0;
-var dpctTotalPactado=isDpct?Math.round((amt+dpctInteresDiario*mDiasPactados)*100)/100:0;
+var dpctInteresDiario=isDpct?amt*(dpctRate/100):0;
+var dpctTotalPactado=isDpct?amt+dpctInteresDiario*mDiasPactados:0;
 if((isMeter||isDpct)&&prMeterStart&&prMeterEnd){
 var infoEl=document.getElementById('pr-meter-info');
 if(infoEl){
@@ -2155,16 +2079,82 @@ if(isFixed){
 rows+='<div class="prop-row"><span class="prop-row-lbl">Interés ('+pct+'%)</span><span class="prop-row-val">'+fmt(fixedInter)+'</span></div>';
 rows+='<div class="prop-row" style="font-size:14px;font-weight:700;border-top:2px solid var(--border);"><span class="prop-row-lbl">Total a pagar'+(fixedDays>1?' ('+fixedDays+' días)':'')+'</span><span class="prop-row-val">'+fmt(fixedTotal)+'</span></div>';
 }else{
-var interestBase=Math.round(res.interest*100)/100;
+var interestBase=res.interest;
 rows+='<div class="prop-row"><span class="prop-row-lbl">Interés</span><span class="prop-row-val">'+fmt(interestBase)+'</span></div>';
-if(res.proration>0.009){rows+='<div class="prop-row prop-row-proration"><span class="prop-row-lbl" style="color:var(--orange)">⚡ Prorrateo '+res.extraDays+' días extra</span><span class="prop-row-val" style="color:var(--orange)">+'+fmt(res.proration)+'</span></div>';}
+if(res.proration>0.009){rows+='<div class="prop-row prop-row-proration"><span class="prop-row-lbl" style="color:var(--orange)"> Prorrateo '+res.extraDays+' días extra</span><span class="prop-row-val" style="color:var(--orange)">+'+fmt(res.proration)+'</span></div>';}
 rows+='<div class="prop-row" style="font-size:14px;font-weight:700;border-top:2px solid var(--border);"><span class="prop-row-lbl">Pago</span><span class="prop-row-val">'+fmt(res.total/n)+'</span></div>';
 }
 }
-document.getElementById('pr-rows').innerHTML=rows;
+// Desglose de la operación
+var breakdownHtml='';
+if(isMeter){
+breakdownHtml='<div style="background:var(--orange-light);border-radius:var(--rs);padding:12px 14px;margin:12px 0;">'
++'<div style="font-size:10px;font-weight:700;color:var(--orange);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Desglose de la operación</div>'
++'<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-family:DM Mono,monospace;">'
++'<span style="color:var(--blue);font-weight:700;">'+fmt(amt)+'</span>'
++'<span style="color:var(--muted);">+</span>'
++'<span style="color:var(--orange);font-weight:700;">'+fmt(dc*mDiasPactados)+'</span>'
++'<span style="color:var(--muted);font-size:11px;">(cobro diario × '+mDiasPactados+' días)</span>'
++'<span style="color:var(--muted);">=</span>'
++'<span style="color:var(--text);font-weight:700;font-size:15px;">'+fmt(amt+dc*mDiasPactados)+'</span>'
++'</div>'
++'<div style="font-size:10px;color:var(--muted);margin-top:6px;">'
++'<span style="color:var(--blue);">■</span> Capital '
++'<span style="color:var(--orange);">■</span> Interés acumulado'
++'</div></div>';
+}else if(isDpct){
+breakdownHtml='<div style="background:var(--purple-light);border-radius:var(--rs);padding:12px 14px;margin:12px 0;">'
++'<div style="font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Desglose de la operación</div>'
++'<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-family:DM Mono,monospace;">'
++'<span style="color:var(--blue);font-weight:700;">'+fmt(amt)+'</span>'
++'<span style="color:var(--muted);">+</span>'
++'<span style="color:var(--purple);font-weight:700;">'+fmt(dpctInteresDiario*mDiasPactados)+'</span>'
++'<span style="color:var(--muted);font-size:11px;">('+dpctRate+'% × '+mDiasPactados+' días)</span>'
++'<span style="color:var(--muted);">=</span>'
++'<span style="color:var(--text);font-weight:700;font-size:15px;">'+fmt(amt+dpctInteresDiario*mDiasPactados)+'</span>'
++'</div>'
++'<div style="font-size:10px;color:var(--muted);margin-top:6px;">'
++'<span style="color:var(--blue);">■</span> Capital '
++'<span style="color:var(--purple);">■</span> Interés acumulado'
++'</div></div>';
+}else if(isFixed){
+breakdownHtml='<div style="background:var(--blue-light);border-radius:var(--rs);padding:12px 14px;margin:12px 0;">'
++'<div style="font-size:10px;font-weight:700;color:var(--blue-mid);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Desglose de la operación</div>'
++'<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-family:DM Mono,monospace;">'
++'<span style="color:var(--blue);font-weight:700;">'+fmt(amt)+'</span>'
++'<span style="color:var(--muted);">+</span>'
++'<span style="color:var(--green);font-weight:700;">'+fmt(fixedInter)+'</span>'
++'<span style="color:var(--muted);font-size:11px;">(interés '+pct+'%)</span>'
++'<span style="color:var(--muted);">=</span>'
++'<span style="color:var(--text);font-weight:700;font-size:15px;">'+fmt(fixedTotal)+'</span>'
++'</div>'
++'<div style="font-size:10px;color:var(--muted);margin-top:6px;">'
++'<span style="color:var(--blue);">■</span> Capital '
++'<span style="color:var(--green);">■</span> Interés'
++'</div></div>';
+}else{
+var interestBase=res.interest;
+breakdownHtml='<div style="background:var(--blue-pale);border:1px solid var(--blue-light);border-radius:var(--rs);padding:12px 14px;margin:12px 0;">'
++'<div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px;">Desglose de la operación</div>'
++'<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;font-size:13px;font-family:DM Mono,monospace;">'
++'<span style="color:var(--blue);font-weight:700;">'+fmt(amt)+'</span>'
++'<span style="color:var(--muted);">+</span>'
++'<span style="color:var(--green);font-weight:700;">'+fmt(interestBase)+'</span>'
++'<span style="color:var(--muted);font-size:11px;">(interés)</span>'
++(res.proration>0.009?'<span style="color:var(--muted);">+</span><span style="color:var(--orange);font-weight:700;">'+fmt(res.proration)+'</span><span style="color:var(--muted);font-size:11px;">(prorrateo '+res.extraDays+' días)</span>':'')
++'<span style="color:var(--muted);">=</span>'
++'<span style="color:var(--text);font-weight:700;font-size:15px;">'+fmt(res.total)+'</span>'
++'</div>'
++'<div style="font-size:10px;color:var(--muted);margin-top:6px;">'
++'<span style="color:var(--blue);">■</span> Capital '
++'<span style="color:var(--green);">■</span> Interés '
++(res.proration>0.009?'<span style="color:var(--orange);">■</span> Prorrateo ':'')
++'</div></div>';
+}
+document.getElementById('pr-rows').innerHTML=rows+breakdownHtml;
 var dhtml='';
 if(freq==='daily_meter'){
-var dc3=Math.round(amt/500)*15;
+var dc3=Math.ceil(amt/500)*15;
 var pms=document.getElementById('pr-meter-start').value;
 var pme=document.getElementById('pr-meter-end').value;
 var diasP=1;
@@ -2194,7 +2184,7 @@ if(isMeter){rules='📌 Condiciones:\n• Cobro: $15 por cada $500 por día\n•
 else if(isDpct){rules='📌 Condiciones:\n• Cobro: '+dpctRate+'% diario del monto prestado\n• Día 1 = fecha de inicio del préstamo\n• Si paga después de la fecha promesa, sigue acumulando el % diario';}
 else if(isFixed){rules='📌 Condiciones:\n• Se contarán los días a partir del día del préstamo\n• En caso de no abonar en la fecha estipulada, la penalización es de $50.00 por día de atraso\n• No se realizará ajuste por pronto pago';}
 else if(freq==='weekly'){rules='📌 Condiciones:\n• El primer pago aplica en la primer semana inmediata\n• Se considera semana de L-D siendo domingo día de pago\n• En caso de no abonar en la fecha estipulada, penalización de $50.00 por día de atraso\n• No se realizará ajuste por pronto pago';}
-else if(freq==='biweekly'){rules=' Condiciones:\n• El primer pago aplica en la primer quincena inmediata\n• Se considera quincena los días 15 y 30 ó 31 según calendario\n• En caso de no abonar en la fecha estipulada, penalización de $50.00 por día de atraso\n• No se realizará ajuste por pronto pago';}
+else if(freq==='biweekly'){rules='📌 Condiciones:\n• El primer pago aplica en la primer quincena inmediata\n• Se considera quincena los días 15 y 30 ó 31 según calendario\n• En caso de no abonar en la fecha estipulada, penalización de $50.00 por día de atraso\n• No se realizará ajuste por pronto pago';}
 else if(freq==='monthly'){rules='📌 Condiciones:\n• El primer pago aplica en el primer mes inmediato\n• Se considera mes el final del mes inmediato al préstamo (30 ó 31)\n• En caso de no abonar en la fecha estipulada, penalización de $50.00 por día de atraso\n• No se realizará ajuste por pronto pago';}
 document.getElementById('pr-rules').style.whiteSpace='pre-line';
 document.getElementById('pr-rules').textContent=rules;
@@ -2219,9 +2209,9 @@ var isFixed=(freq==='daily_fixed');
 var n=(isMeter||isDpct||isFixed)?1:parseInt(document.getElementById('pr-npay').value)||1;
 var fd=isFixed?document.getElementById('pr-paydate').value:(isMeter||isDpct?'':document.getElementById('pr-firstdate').value);
 var res=computePriceBreakdown(amt,pct,isMeter?'daily':freq,n,fd);
-var dc=Math.round(amt/500)*15;
+var dc=Math.ceil(amt/500)*15;
 var fixedDays=isFixed&&fd?daysBetween(todayStr(),fd)+1:1;
-var fixedInter=isFixed?Math.round(amt*pct/100*100)/100:0;
+var fixedInter=isFixed?amt*pct/100:0;
 var fixedTotal=isFixed?amt+fixedInter:0;
 var msg='';
 if(isMeter){
@@ -2229,12 +2219,12 @@ var pmS=document.getElementById('pr-meter-start').value;
 var pmE=document.getElementById('pr-meter-end').value;
 var diasPact=(pmS&&pmE&&pmE>=pmS)?daysBetween(pmS,pmE)+1:1;
 msg='Buen día, envío la propuesta para un préstamo de '+fmt(amt)+' por día corriente, quedo pendiente de confirmación.\n';
-msg+=' Tipo: Préstamo por día corriente\n';
+msg+='📅 Tipo: Préstamo por día corriente\n';
 msg+='💰 Capital: '+fmt(amt)+'\n';
 msg+='💵 Cobro diario: '+fmt(dc)+' ($15 × cada $500)\n';
 if(pmS) msg+=' Fecha de inicio: '+fmtDate(pmS)+'\n';
-if(pmE) msg+=' Fecha promesa: '+fmtDate(pmE)+' ('+diasPact+' días)\n';
-msg+='💵 Total pactado: '+fmt(amt+dc*diasPact)+'\n';
+if(pmE) msg+='📅 Fecha promesa: '+fmtDate(pmE)+' ('+diasPact+' días)\n';
+msg+=' Total pactado: '+fmt(amt+dc*diasPact)+'\n';
 msg+='\n⚠ Si no liquida en la fecha promesa, se seguirán sumando '+fmt(dc)+'/día.\n';
 msg+='\n Condiciones:\n• Cobro: $15 por cada $500 por día\n• Día 1 = fecha de inicio del préstamo\n• En caso de no abonar en la fecha promesa, el cobro diario continúa';
 }else if(isDpct){
@@ -2243,11 +2233,11 @@ var pmE=document.getElementById('pr-meter-end').value;
 var diasPact=(pmS&&pmE&&pmE>=pmS)?daysBetween(pmS,pmE)+1:1;
 var interesDiario=amt*(pct/100);
 msg='Buen día, envío la propuesta para un préstamo de '+fmt(amt)+' diario porcentual, quedo pendiente de confirmación.\n';
-msg+=' Tipo: Préstamo diario porcentual\n';
+msg+='📅 Tipo: Préstamo diario porcentual\n';
 msg+='💰 Capital: '+fmt(amt)+'\n';
 msg+='💯 Porcentaje diario: '+pct+'%\n';
-msg+='💵 Interés diario: '+fmt(interesDiario)+'\n';
-if(pmS) msg+='📅 Fecha de inicio: '+fmtDate(pmS)+'\n';
+msg+=' Interés diario: '+fmt(interesDiario)+'\n';
+if(pmS) msg+=' Fecha de inicio: '+fmtDate(pmS)+'\n';
 if(pmE) msg+='📅 Fecha promesa: '+fmtDate(pmE)+' ('+diasPact+' días)\n';
 msg+=' Total pactado: '+fmt(amt+interesDiario*diasPact)+'\n';
 msg+='\n⚠ Si no liquida en la fecha promesa, sigue acumulando '+pct+'% diario.\n';
@@ -2266,14 +2256,14 @@ msg+='📅 Tipo de pago: '+freqNombre+'\n';
 msg+='🔢 Número de pagos: '+n+'\n';
 msg+='💳 Pago: '+fmt(res.total/n)+'\n';
 if(fd){
-msg+='\n Calendario:\n';
+msg+='\n📋 Calendario:\n';
 for(var k=0;k<n;k++){
 var pd=calcDateFromFirst(fd,freq,k);
 var pa=k<n-1?Math.floor((res.total/n)*100)/100:Math.round((res.total-Math.floor((res.total/n)*100)/100*(n-1))*100)/100;
 msg+=' Pago '+(k+1)+': '+fmtDate(pd)+' — '+fmt(pa)+'\n';
 }
 }
-if(freq==='weekly'){msg+='\n📌 Condiciones:\n• El primer pago aplica en la primer semana inmediata\n• Se considera semana de L-D siendo domingo día de pago\n• En caso de no abonar en la fecha estipulada, penalización de $50.00 por día de atraso\n• No se realizará ajuste por pronto pago';}
+if(freq==='weekly'){msg+='\n Condiciones:\n• El primer pago aplica en la primer semana inmediata\n• Se considera semana de L-D siendo domingo día de pago\n• En caso de no abonar en la fecha estipulada, penalización de $50.00 por día de atraso\n• No se realizará ajuste por pronto pago';}
 else if(freq==='biweekly'){msg+='\n📌 Condiciones:\n• El primer pago aplica en la primer quincena inmediata\n• Se considera quincena los días 15 y 30 ó 31 según calendario\n• En caso de no abonar en la fecha estipulada, penalización de $50.00 por día de atraso\n• No se realizará ajuste por pronto pago';}
 else if(freq==='monthly'){msg+='\n📌 Condiciones:\n• El primer pago aplica en el primer mes inmediato\n• Se considera mes el final del mes inmediato al préstamo (30 ó 31)\n• En caso de no abonar en la fecha estipulada, penalización de $50.00 por día de atraso\n• No se realizará ajuste por pronto pago';}
 }
@@ -2286,7 +2276,7 @@ var isMeter=(freq==='daily_meter');
 var isDpct=(freq==='daily_percent');
 var isFixed=(freq==='daily_fixed');
 if(!amt){showNotif('Ingresa el monto primero');return;}
-var pct=isDpct?(parseFloat(document.getElementById('pr-dpct-rate').value)||0):(parseFloat(document.getElementById('pr-interest').value)||0);
+var pct=parseFloat(document.getElementById('pr-interest').value)||0;
 var n=(isMeter||isDpct||isFixed)?1:parseInt(document.getElementById('pr-npay').value)||1;
 var fd=isFixed?'':(isMeter||isDpct)?'':document.getElementById('pr-firstdate').value;
 var fixedPaydate=isFixed?document.getElementById('pr-paydate').value:'';
@@ -2334,7 +2324,6 @@ document.getElementById('l-fixed-paydate-wrap').style.display='none';
 document.getElementById('l-dpct-start').value=ps.meterStart||todayStr();
 document.getElementById('l-dpct-end').value=ps.meterEnd||'';
 document.getElementById('l-dpct-end').min=ps.meterStart||todayStr();
-document.getElementById('l-dpct-rate').value=ps.pct||2;
 document.getElementById('l-dpct-rate').value=ps.pct;
 }else if(ps.isFixed){
 document.getElementById('l-meter-wrap').style.display='none';
@@ -2357,9 +2346,6 @@ document.getElementById('l-firstdate').value=ps.fd;
 calcLoanPreview();
 openModal('m-loan');
 }
-// ============================================================
-// SETTINGS
-// ============================================================
 function openSettings(){
 loadProfilePhoto();
 document.getElementById('cfg-owner').value=S.owner;
@@ -2369,16 +2355,22 @@ var savedCid=localStorage.getItem('pa_drive_cid')||'';
 document.getElementById('cfg-drive-cid').value=savedCid;
 var pinEl=document.getElementById('cfg-pin');if(pinEl)pinEl.value='';
 if(S.driveClientId&&GD.authorized){document.getElementById('gd-status').textContent='✅ Conectado a Google Drive';document.getElementById('gd-status').style.color='var(--green)';}
-else if(savedCid){document.getElementById('gd-status').textContent='️ Client ID guardado — pendiente de autorizar';document.getElementById('gd-status').style.color='var(--orange)';}
+else if(savedCid){document.getElementById('gd-status').textContent='⚠️ Client ID guardado — pendiente de autorizar';document.getElementById('gd-status').style.color='var(--orange)';}
 openModal('m-settings');
 }
-function saveSettings(){S.owner=document.getElementById('cfg-owner').value.trim()||S.owner;S.myphone=document.getElementById('cfg-phone').value.trim();S.alertdays=parseInt(document.getElementById('cfg-days').value)||3;var newPin=(document.getElementById('cfg-pin').value||'').trim();
+function saveSettings(){
+S.owner=document.getElementById('cfg-owner').value.trim()||S.owner;
+S.myphone=document.getElementById('cfg-phone').value.trim();
+S.alertdays=parseInt(document.getElementById('cfg-days').value)||3;
+var newPin=(document.getElementById('cfg-pin').value||'').trim();
 if(newPin&&newPin.length===4&&/^\d{4}$/.test(newPin)){localStorage.setItem('pa_pin',newPin);}
 else if(newPin===''){localStorage.removeItem('pa_pin');}
-localStorage.setItem('pa_owner',S.owner);localStorage.setItem('pa_phone',S.myphone);localStorage.setItem('pa_days',S.alertdays);document.getElementById('hdr-sub').textContent=S.owner;showNotif('✓ Configuración guardada');closeModal('m-settings');renderMain();}
-// ============================================================
-// GOOGLE DRIVE
-// ============================================================
+localStorage.setItem('pa_owner',S.owner);localStorage.setItem('pa_phone',S.myphone);localStorage.setItem('pa_days',S.alertdays);
+document.getElementById('hdr-sub').textContent=S.owner;
+showNotif('✓ Configuración guardada');
+closeModal('m-settings');
+renderMain();
+}
 var GD={tokenClient:null,accessToken:null,authorized:false};
 function initGoogleDrive(){if(window.google&&window.google.accounts)return;var s=document.createElement('script');s.src='https://accounts.google.com/gsi/client';s.onload=function(){setupGDTokenClient();};document.head.appendChild(s);}
 function setupGDTokenClient(){if(!window.google||!window.google.accounts)return;GD.tokenClient=google.accounts.oauth2.initTokenClient({client_id:S.driveClientId||'',scope:'https://www.googleapis.com/auth/drive.file',callback:function(resp){if(resp.error){showNotif('Error al conectar con Drive: '+resp.error);return;}GD.accessToken=resp.access_token;GD.authorized=true;localStorage.setItem('pa_drive_auth','1');document.getElementById('gd-status').textContent='✅ Conectado a Google Drive';document.getElementById('gd-status').style.color='var(--green)';showNotif('✅ Conectado a Google Drive');exportToGDrive();}});}
@@ -2388,20 +2380,14 @@ function autoBackup(){if(GD.authorized&&GD.accessToken) exportToGDrive();}
 function sendBackupWA(){var phone=S.myphone.replace(/\D/g,'');if(phone.length===10) phone='52'+phone;if(phone.length<12){showNotif('Agrega tu WhatsApp en configuración primero');return;}var data={version:4,exportDate:todayStr(),owner:S.owner,clients:DB.clients,loans:DB.loans,payments:DB.payments,overrides:DB.overrides};var json=JSON.stringify(data);var size=Math.round(json.length/1024);var msg='📦 Respaldo PrestApp — '+todayStr()+'\n👤 Propietario: '+S.owner+'\n👥 Clientes: '+DB.clients.length+'\n💳 Préstamos: '+DB.loans.length+'\n💰 Pagos: '+DB.payments.length+'\n📊 Tamaño: ~'+size+' KB\n⚠️ Para restaurar: exporta el archivo .json desde la app y guárdalo en Drive o aquí en WhatsApp como documento.';window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');setTimeout(function(){exportData();},500);}
 function exportData(){var data={version:4,exportDate:todayStr(),owner:S.owner,clients:DB.clients,loans:DB.loans,payments:DB.payments,overrides:DB.overrides};var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='PrestApp_respaldo_'+todayStr()+'.json';a.click();URL.revokeObjectURL(url);showNotif('✓ Respaldo descargado');if(GD.authorized) exportToGDrive();}
 function importData(input){var file=input.files[0];if(!file)return;var reader=new FileReader();reader.onload=function(e){try{var data=JSON.parse(e.target.result);if(!data.clients||!data.loans){showNotif('Archivo no válido');return;}if(!confirm('¿Restaurar datos? Reemplazará los datos actuales.'))return;if(data.clients)DB.clients=data.clients;if(data.loans)DB.loans=data.loans;if(data.payments)DB.payments=data.payments;if(data.overrides)DB.overrides=data.overrides;if(data.owner){S.owner=data.owner;localStorage.setItem('pa_owner',data.owner);document.getElementById('hdr-sub').textContent=data.owner;}showNotif('✓ Datos restaurados');closeModal('m-settings');renderMain();}catch(err){showNotif('Error al leer el archivo');}};reader.readAsText(file);input.value='';}
-// ============================================================
-// MISC
-// ============================================================
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 function hashStr(s){var h=0;for(var i=0;i<s.length;i++)h=Math.imul(31,h)+s.charCodeAt(i)|0;return h;}
 function showNotif(msg,dur){var n=document.getElementById('notif');n.textContent=msg;n.className='notif show';setTimeout(function(){n.classList.remove('show');},dur||3200);}
 function showNotifSuccess(msg,dur){var n=document.getElementById('notif');n.textContent=msg;n.className='notif show success';setTimeout(function(){n.classList.remove('show');},dur||3000);}
-function loadProfilePhoto(){var photo=localStorage.getItem('pa_photo');var avatarEl=document.getElementById('hdr-avatar');var previewEl=document.getElementById('cfg-avatar-preview');if(photo){var img='<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;">';if(avatarEl) avatarEl.innerHTML=img;if(previewEl) previewEl.innerHTML=img;}else{if(avatarEl) avatarEl.innerHTML='';if(previewEl) previewEl.innerHTML='';}}
+function loadProfilePhoto(){var photo=localStorage.getItem('pa_photo');var avatarEl=document.getElementById('hdr-avatar');var previewEl=document.getElementById('cfg-avatar-preview');if(photo){var img='<img src="'+photo+'" style="width:100%;height:100%;object-fit:cover;">';if(avatarEl) avatarEl.innerHTML=img;if(previewEl) previewEl.innerHTML=img;}else{if(avatarEl) avatarEl.innerHTML='💼';if(previewEl) previewEl.innerHTML='💼';}}
 function handleProfilePhoto(input){var file=input.files[0];if(!file)return;if(file.size>2*1024*1024){showNotif('La foto debe ser menor a 2MB');return;}var reader=new FileReader();reader.onload=function(e){localStorage.setItem('pa_photo',e.target.result);loadProfilePhoto();showNotif('✓ Foto de perfil actualizada');};reader.readAsDataURL(file);input.value='';}
 function removeProfilePhoto(){localStorage.removeItem('pa_photo');loadProfilePhoto();showNotif('Foto eliminada');}
-// ============================================================
-// ALERTS
-// ============================================================
 var ALERTS = {};
 function loadAlerts(){try{ALERTS=JSON.parse(localStorage.getItem('pa_alerts')||'{}');}catch(e){ALERTS={};}}
 function saveAlerts(){localStorage.setItem('pa_alerts',JSON.stringify(ALERTS));}
@@ -2432,41 +2418,18 @@ var key=alertKey(lid,idx);
 ALERTS[key]={lid:lid,idx:idx,date:paydate,alertdate:alertdate,alerttime:alerttime,how:how,createdAt:todayStr()};
 saveAlerts();
 if(how==='notif'||how==='both'){requestNotifPermission(function(){scheduleNotifCustom(lid,idx,paydate,alertdate,alerttime);});}
-showNotif('🔔 Alerta programada para '+fmtDate(alertdate)+' a las '+alerttime);
+showNotif(' Alerta programada para '+fmtDate(alertdate)+' a las '+alerttime);
 closeModal('m-alert');
 renderDPay();
 }
 function deleteAlert(){var lid=document.getElementById('al-lid').value;var idx=parseInt(document.getElementById('al-idx').value);delete ALERTS[alertKey(lid,idx)];saveAlerts();showNotif('Alerta eliminada');closeModal('m-alert');renderDPay();}
 function requestNotifPermission(cb){if(!('Notification' in window)){showNotif('Este navegador no soporta notificaciones');return;}if(Notification.permission==='granted'){cb();return;}Notification.requestPermission().then(function(p){if(p==='granted')cb();else showNotif('Permiso de notificaciones denegado');});}
 function scheduleNotifCustom(lid,idx,paydate,alertdate,alerttime){var parts=(alerttime||'06:00').split(':');var h=parseInt(parts[0])||6, m=parseInt(parts[1])||0;var triggerDate=parseDate(alertdate);triggerDate.setHours(h,m,0,0);var now=new Date();if(triggerDate<=now){showNotif('La fecha/hora de alerta ya pasó');return;}var notifs=JSON.parse(localStorage.getItem('pa_schnotifs')||'[]');notifs=notifs.filter(function(n){return n.key!==alertKey(lid,idx);});notifs.push({key:alertKey(lid,idx),lid:lid,idx:idx,triggerTime:triggerDate.getTime(),dateStr:paydate,alertdate:alertdate,alerttime:alerttime,fired:false});localStorage.setItem('pa_schnotifs',JSON.stringify(notifs));showNotif('✓ Alerta programada: '+fmtDate(alertdate)+' '+alerttime);}
-function checkScheduledNotifs(){var notifs=JSON.parse(localStorage.getItem('pa_schnotifs')||'[]');var now=Date.now();var changed=false;notifs.forEach(function(n){if(!n.fired&&now>=n.triggerTime){n.fired=true;changed=true;var loan=DB.loans.find(function(l){return String(l.id)===String(n.lid);});var sched=loan?getSched(loan):[];var p=sched[n.idx];var cl=loan?DB.clients.find(function(c){return String(c.id)===String(loan.cliente_id);}):null;var title='PrestApp 🔔';var body=(cl?cl.nombre:'Cliente')+' — Pago '+(n.idx+1)+' vence el '+fmtDate(n.dateStr)+(p?' ('+fmt(p.amount)+')':'');if(Notification.permission==='granted'){try{new Notification(title,{body:body,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💼</text></svg>'});}catch(e){if(navigator.serviceWorker&&navigator.serviceWorker.ready){navigator.serviceWorker.ready.then(function(sw){sw.showNotification(title,{body:body});}).catch(function(){});}}}showNotif('🔔 '+body,6000);var alert=ALERTS[n.key];if(alert&&(alert.how==='wa'||alert.how==='both')){var myPhone=S.myphone.replace(/\D/g,'');if(myPhone.length===10) myPhone='52'+myPhone;if(myPhone.length>=12){var msg='PrestApp recordatorio: '+body+'. Entra a la app para enviar la alerta al cliente.';setTimeout(function(){if(confirm(' '+body+'\n¿Abrir WhatsApp para recordártelo?')){window.open('https://wa.me/'+myPhone+'?text='+encodeURIComponent(msg),'_blank');}},500);}}}});if(changed) localStorage.setItem('pa_schnotifs',JSON.stringify(notifs));}
-// ============================================================
-// HISTORIAL DELETE / RESTORE
-// ============================================================
+function checkScheduledNotifs(){var notifs=JSON.parse(localStorage.getItem('pa_schnotifs')||'[]');var now=Date.now();var changed=false;notifs.forEach(function(n){if(!n.fired&&now>=n.triggerTime){n.fired=true;changed=true;var loan=DB.loans.find(function(l){return String(l.id)===String(n.lid);});var sched=loan?getSched(loan):[];var p=sched[n.idx];var cl=loan?DB.clients.find(function(c){return String(c.id)===String(loan.cliente_id);}):null;var title='PrestApp 🔔';var body=(cl?cl.nombre:'Cliente')+' — Pago '+(n.idx+1)+' vence el '+fmtDate(n.dateStr)+(p?' ('+fmt(p.amount)+')':'');if(Notification.permission==='granted'){try{new Notification(title,{body:body,icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">💼</text></svg>'});}catch(e){if(navigator.serviceWorker&&navigator.serviceWorker.ready){navigator.serviceWorker.ready.then(function(sw){sw.showNotification(title,{body:body});}).catch(function(){});}}}showNotif('🔔 '+body,6000);var alert=ALERTS[n.key];if(alert&&(alert.how==='wa'||alert.how==='both')){var myPhone=S.myphone.replace(/\D/g,'');if(myPhone.length===10) myPhone='52'+myPhone;if(myPhone.length>=12){var msg='PrestApp recordatorio: '+body+'. Entra a la app para enviar la alerta al cliente.';setTimeout(function(){if(confirm('🔔 '+body+'\n¿Abrir WhatsApp para recordártelo?')){window.open('https://wa.me/'+myPhone+'?text='+encodeURIComponent(msg),'_blank');}},500);}}}});if(changed) localStorage.setItem('pa_schnotifs',JSON.stringify(notifs));}
 function openDelHist(pid, estado){document.getElementById('dh-pid').value=pid;var payments=DB.payments;var pay=payments.find(function(p){return String(p.id)===String(pid);});if(!pay){showNotif('Registro no encontrado');return;}var loan=DB.loans.find(function(l){return String(l.id)===String(pay.prestamo_id);});document.getElementById('dh-info').innerHTML='Registro: '+(pay.notas||'Abono')+(loan?' · '+loan.concepto:'')+'<br>Fecha: '+fmtDate(pay.fecha)+' · Monto: '+fmt(pay.monto);openModal('m-del-hist');}
-function restoreHistEntry(){var pid=document.getElementById('dh-pid').value;var payments=DB.payments;var pay=payments.find(function(p){return String(p.id)===String(pid);});if(!pay){showNotif('No encontrado');return;}var lid=pay.prestamo_id;var idx=parseInt(pay.pago_index);DB.payments=payments.filter(function(p){return String(p.id)!==String(pid);});var remaining=getAbonado(lid,idx);var loan=DB.loans.find(function(l){return String(l.id)===String(lid);});var amounts=amountsForLoan(loan);var baseAmt=amounts[idx]||0;var newStatus=remaining>=baseAmt-0.009&&baseAmt>0?'pagado':remaining>0?'parcial':'pendiente';var ov=DB.overrides;if(ov[lid]&&ov[lid][idx]){delete ov[lid][idx].status;delete ov[lid][idx].eliminado;DB.overrides=ov;}autoBackup();showNotif('↩ Pago restaurado a '+newStatus);closeModal('m-del-hist');refreshDetailHeader();renderDPay();renderMain();}
+function restoreHistEntry(){var pid=document.getElementById('dh-pid').value;var payments=DB.payments;var pay=payments.find(function(p){return String(p.id)===String(pid);});if(!pay){showNotif('No encontrado');return;}var lid=pay.prestamo_id;var idx=parseInt(pay.pago_index);DB.payments=payments.filter(function(p){return String(p.id)!==String(pid);});var remaining=getAbonado(lid,idx);var loan=DB.loans.find(function(l){return String(l.id)===String(lid);});var amounts=amountsForLoan(loan);var baseAmt=amounts[idx]||0;var newStatus=remaining>=baseAmt-0.009&&baseAmt>0?'pagado':remaining>0?'parcial':'pendiente';var ov=DB.overrides;if(ov[lid]&&ov[lid][idx]){delete ov[lid][idx].status;delete ov[lid][idx].eliminado;DB.overrides=ov;}autoBackup();showNotif(' Pago restaurado a '+newStatus);closeModal('m-del-hist');refreshDetailHeader();renderDPay();renderMain();}
 function permanentDeleteHist(){var pid=document.getElementById('dh-pid').value;if(!confirm('¿Eliminar permanentemente? Esta acción no se puede deshacer.'))return;var payments=DB.payments;DB.payments=payments.filter(function(p){return String(p.id)!==String(pid);});autoBackup();showNotif('🗑 Registro eliminado permanentemente');closeModal('m-del-hist');refreshDetailHeader();renderDPay();renderMain();}
-// ============================================================
-// RESUMEN
-// ============================================================
-function openResumen(){
-var loans=DB.loans;
-var years={};
-loans.forEach(function(l){getSched(l).forEach(function(p){var y=(p.date||'').substring(0,4);if(y) years[y]=1;});});
-var ySel=document.getElementById('res-year');
-var curY=ySel.value;
-ySel.innerHTML='<option value="">Todos</option>';
-Object.keys(years).sort().reverse().forEach(function(y){ySel.innerHTML+='<option value="'+y+'">'+y+'</option>';});
-if(curY) ySel.value=curY;
-var clients=DB.clients.slice().sort(function(a,b){return a.nombre.localeCompare(b.nombre,'es');});
-var cSel=document.getElementById('res-client');
-var curC=cSel.value;
-cSel.innerHTML='<option value="">Todos</option>';
-clients.forEach(function(c){cSel.innerHTML+='<option value="'+c.id+'">'+c.nombre+'</option>';});
-if(curC) cSel.value=curC;
-renderResumen();
-document.getElementById('res-view').classList.add('open');updateFabBack();
-}
+function openResumen(){var loans=DB.loans;var years={};loans.forEach(function(l){getSched(l).forEach(function(p){var y=(p.date||'').substring(0,4);if(y) years[y]=1;});});var ySel=document.getElementById('res-year');var curY=ySel.value;ySel.innerHTML='<option value="">Todos</option>';Object.keys(years).sort().reverse().forEach(function(y){ySel.innerHTML+='<option value="'+y+'">'+y+'</option>';});if(curY) ySel.value=curY;var clients=DB.clients.slice().sort(function(a,b){return a.nombre.localeCompare(b.nombre,'es');});var cSel=document.getElementById('res-client');var curC=cSel.value;cSel.innerHTML='<option value="">Todos</option>';clients.forEach(function(c){cSel.innerHTML+='<option value="'+c.id+'">'+c.nombre+'</option>';});if(curC) cSel.value=curC;renderResumen();document.getElementById('res-view').classList.add('open');updateFabBack();}
 function closeResumen(){document.getElementById('res-view').classList.remove('open');updateFabBack();document.querySelectorAll('.ni').forEach(function(n){n.classList.remove('active');});document.getElementById('nav-deudas').classList.add('active');}
 var RES_TAB='tabla';
 function switchResTab(tab){RES_TAB=tab;document.getElementById('res-tab-grafica').classList.toggle('active',tab==='grafica');document.getElementById('res-tab-tabla').classList.toggle('active',tab==='tabla');document.getElementById('res-chart-wrap').style.display=tab==='grafica'?'':'none';document.getElementById('res-chart-controls').style.display=tab==='grafica'?'':'none';document.getElementById('res-table-wrap').style.display=tab==='tabla'?'':'none';if(tab==='grafica') renderResumenChart();}
@@ -2480,9 +2443,6 @@ function renderResumen(){var rows=getResumenData();var col=RES_SORT.col,dir=RES_
 function deleteLoanFromResumen(loanId){if(!confirm('¿Eliminar este préstamo del historial? Esta acción no se puede deshacer.'))return;var loans=DB.loans;var idx=loans.findIndex(function(l){return String(l.id)===String(loanId);});if(idx===-1){showNotif('Préstamo no encontrado');return;}loans.splice(idx,1);DB.loans=loans;var payments=DB.payments.filter(function(p){return String(p.prestamo_id)!==String(loanId);});DB.payments=payments;var ov=DB.overrides;delete ov[loanId];DB.overrides=ov;Object.keys(ALERTS).forEach(function(k){if(k.indexOf(loanId+'__')===0){delete ALERTS[k];}});saveAlerts();var schNotifs=JSON.parse(localStorage.getItem('pa_schnotifs')||'[]');schNotifs=schNotifs.filter(function(n){return String(n.lid)!==String(loanId);});localStorage.setItem('pa_schnotifs',JSON.stringify(schNotifs));showNotif('✓ Préstamo eliminado');renderResumen();renderMain();}
 function downloadResumen(){var rows=getResumenData();if(!rows.length){showNotif('Sin datos para descargar');return;}var csv='Cliente,Año,Mes,Día,Capital,Interés,Descuento,Atraso,Abonado,Restante,Concepto\n';rows.forEach(function(r){var d=r.fecha?r.fecha.substring(8,10):'';var mLbl=r.m?MESES[parseInt(r.m)]||r.m:'';csv+='"'+r.nombre+'","'+r.y+'","'+mLbl+'","'+d+'","'+r.capital+'","'+r.interes+'","'+r.descuento+'","'+(r.atraso||0)+'","'+(r.abonado||0)+'","'+r.restante+'","'+r.concepto+'"\n';});var blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});var url=URL.createObjectURL(blob);var a=document.createElement('a');a.href=url;a.download='PrestApp_resumen_'+todayStr()+'.csv';a.click();URL.revokeObjectURL(url);showNotif('✓ CSV descargado');}
 function sendResumenWA(){var phone=S.myphone.replace(/\D/g,'');if(phone.length===10) phone='52'+phone;if(phone.length<12){showNotif('Agrega tu WhatsApp en configuración');return;}var rows=getResumenData();if(!rows.length){showNotif('Sin datos para enviar');return;}var totalCap=0,totalInt=0,totalDesc=0,totalAtr=0,totalAbo=0,totalTot=0;rows.forEach(function(r){totalCap+=r.capital;totalInt+=r.interes;totalDesc+=r.descuento;totalAtr+=(r.atraso||0);totalAbo+=(r.abonado||0);totalTot+=r.restante;});var filterY=document.getElementById('res-year').value;var filterM=document.getElementById('res-month').value;var filterC=document.getElementById('res-client').value;var cl=filterC?DB.clients.find(function(c){return String(c.id)===String(filterC);}):null;var titulo='Resumen PrestApp'+(filterY?' '+filterY:'')+(filterM?' '+MESES[parseInt(filterM)]||filterM:'')+(cl?' · '+cl.nombre:'');var msg=titulo+'\n'+'─'.repeat(30)+'\n';rows.slice(0,20).forEach(function(r){var d=r.fecha?r.fecha.substring(8,10):'';var mLbl=r.m?MESES[parseInt(r.m)]||r.m:'';msg+=r.nombre+' · '+d+'/'+mLbl+'/'+r.y+'\n'+' Capital: '+fmt(r.capital)+' · Interés: '+fmt(r.interes)+(r.descuento>0?' · Desc: −'+fmt(r.descuento):'')+(r.atraso>0?' · Atraso: +'+fmt(r.atraso):'')+(r.abonado>0?' · Abonado: −'+fmt(r.abonado):'')+' · Restante: '+fmt(r.restante)+'\n';});if(rows.length>20) msg+='...y '+(rows.length-20)+' más\n';msg+='─'.repeat(30)+'\n';msg+='TOTALES: Capital '+fmt(totalCap)+' · Interés '+fmt(totalInt)+(totalDesc>0?' · Desc −'+fmt(totalDesc):'')+(totalAtr>0?' · Atraso +'+fmt(totalAtr):'')+(totalAbo>0?' · Abonado −'+fmt(totalAbo):'')+' · Restante '+fmt(totalTot);window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');}
-// ============================================================
-// INIT
-// ============================================================
 try {init();} catch(e) {var errDiv = document.createElement('div');errDiv.style.cssText = 'position:fixed;inset:0;z-index:9999;background:#fff;padding:20px;font-family:monospace;font-size:13px;color:red;white-space:pre-wrap;overflow:auto;';errDiv.textContent = 'ERROR EN INIT:\n' + e.message + '\n' + e.stack;document.body.appendChild(errDiv);}
 </script>
 </body>
