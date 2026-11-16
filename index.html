@@ -263,8 +263,11 @@ oninput="if(this.value.length===4)checkPin()">
 </div>
 <div class="dbody">
 <div class="rem-row">
-<button class="rem-a rem-wa" onclick="sendWA(null,null)"> WhatsApp</button>
+<button class="rem-a rem-wa" onclick="sendWA(null,null)">📱 WhatsApp</button>
 <button class="rem-a rem-sms" onclick="sendSMS()">💬 SMS</button>
+</div>
+<div class="rem-row" style="margin-top:-4px;">
+<button class="rem-a" style="background:#e7f9ee;color:#128C7E;" onclick="sendResumenCliente()">🧾 Enviar resumen total</button>
 </div>
 <div class="tabs" style="margin:0 -14px 14px;">
 <button class="tab active" onclick="dTab('deudas',this)">Pagos pendientes</button>
@@ -1183,6 +1186,65 @@ function diasTranscurridosLoan(loan){
   var hoy=new Date();hoy.setHours(12,0,0,0);
   var ini=new Date(start+'T12:00:00');
   return Math.max(1,Math.floor((hoy-ini)/86400000)+1);
+}
+// ============================================================
+// RESUMEN TOTAL POR CLIENTE (todas sus tarjetas pendientes)
+// ============================================================
+function desgloseTarjeta(loan,idx,p){
+  // Mismos cálculos que la tarjeta: capital + interés + atraso − descuento − abonado = pendiente
+  var esDiario=(loan.frecuencia==='daily_meter'||loan.frecuencia==='daily_percent');
+  var o=(DB.overrides[loan.id]&&DB.overrides[loan.id][idx])||{};
+  var cap=o.capital!==undefined?o.capital:Math.round((loan.monto||0)/(loan.num_pagos||1)*100)/100;
+  var inte=(o.interes!==undefined&&!esDiario)?o.interes:Math.round(Math.max(0,p.amount-cap)*100)/100;
+  var atr=calcAtraso(loan,idx,p);
+  var desc=p.descuento||0, abon=p.abonado||0;
+  var total=Math.max(0,Math.round((p.amount+atr.monto-desc)*100)/100);
+  var pend=Math.max(0,Math.round((total-abon)*100)/100);
+  return {esDiario:esDiario,cap:cap,inte:inte,atr:atr,desc:desc,abon:abon,pend:pend};
+}
+function sendResumenCliente(){
+  var cl=S._cl; if(!cl){showNotif('Cliente no encontrado');return;}
+  var items=[];
+  DB.loans.filter(function(l){return String(l.cliente_id)===String(cl.id);}).forEach(function(loan){
+    getSched(loan).forEach(function(p,i){if(p.status!=='pagado') items.push({loan:loan,p:p,i:i});});
+  });
+  if(!items.length){showNotif('Este cliente no tiene pagos pendientes');return;}
+  items.sort(function(a,b){return new Date(a.p.date)-new Date(b.p.date);});
+  var hoy=new Date();hoy.setHours(0,0,0,0);
+  var T={cap:0,inte:0,atr:0,desc:0,abon:0,pend:0};
+  var lineas=[];
+  items.forEach(function(it,k){
+    var loan=it.loan,p=it.p,i=it.i,d=desgloseTarjeta(loan,i,p);
+    T.cap+=d.cap;T.inte+=d.inte;T.atr+=d.atr.monto;T.desc+=d.desc;T.abon+=d.abon;T.pend+=d.pend;
+    var enc;
+    if(d.esDiario){
+      var ini=loan.frecuencia==='daily_percent'?loan.dpct_start:loan.meter_start;
+      var dias=diasTranscurridosLoan(loan);
+      enc=(k+1)+') '+loan.concepto+' · por día desde '+fmtDate(ini)+' ('+dias+' día'+(dias!==1?'s':'')+')';
+    }else{
+      var v=new Date(p.date+'T12:00:00');v.setHours(0,0,0,0);var dif=Math.floor((v-hoy)/86400000);
+      enc=(k+1)+') '+(p.concept||loan.concepto)+' · Pago '+(i+1)+' de '+getSched(loan).length+' · '+(dif<0?'venció el ':dif===0?'vence hoy ':'vence el ')+(dif===0?'':fmtDate(p.date));
+    }
+    var op='Capital '+fmtMx(d.cap)+' + '+(d.esDiario?'Interés acumulado ':'Interés ')+fmtMx(d.inte)
+      +(d.atr.monto>0?' + Atraso '+fmtMx(d.atr.monto)+(d.atr.detenido?' (detenido)':''):'')
+      +(d.desc>0?' − Descuento '+fmtMx(d.desc):'')
+      +(d.abon>0?' − Abonado '+fmtMx(d.abon):'')
+      +' = '+fmtMx(d.pend);
+    lineas.push(enc+'\n   '+op);
+  });
+  var msg='Buen día '+cl.nombre+', el total de tu adeudo al día de hoy es de '+fmtMx(T.pend)+'.'
+    +'\n\nDesglose ('+items.length+' pago'+(items.length!==1?'s':'')+' pendiente'+(items.length!==1?'s':'')+'):\n'+lineas.join('\n')
+    +'\n\nTotales:'
+    +'\n• Capital: '+fmtMx(T.cap)
+    +'\n• Interés: '+fmtMx(T.inte)
+    +(T.atr>0?'\n• Penalización por atraso: +'+fmtMx(T.atr):'')
+    +(T.desc>0?'\n• Descuento: −'+fmtMx(T.desc):'')
+    +(T.abon>0?'\n• Abonado: −'+fmtMx(T.abon):'')
+    +'\n• Total pendiente al día de hoy: '+fmtMx(T.pend)
+    +'\n\nQuedo pendiente, gracias.';
+  var phone=buildPhone(cl);
+  if(phone.length>=12){window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank');}
+  else{if(navigator.clipboard){navigator.clipboard.writeText(msg).then(function(){showNotif('Cliente sin teléfono · Mensaje copiado al portapapeles');},function(){prompt('Copia el mensaje:',msg);});}else{prompt('Copia el mensaje:',msg);}}
 }
 function sendResumenDiario(lid,idx){
   var loan=DB.loans.find(function(l){return String(l.id)===String(lid);});
