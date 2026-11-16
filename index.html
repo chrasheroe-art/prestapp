@@ -687,7 +687,7 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 </div>
 <script>
 // ===== VERSIÓN DE LA APP: súbela en cada cambio que se despliegue =====
-var APP_VERSION='1.4';
+var APP_VERSION='1.5';
 var APP_VERSION_FECHA='16/nov/2026';
 
 var S={owner:localStorage.getItem('pa_owner')||'',myphone:localStorage.getItem('pa_phone')||'',alertdays:parseInt(localStorage.getItem('pa_days')||'3'),tab:'cobrar',client:null,dtab:'deudas',_cl:null,_total:0,sortOrder:'urgencia'};
@@ -1213,15 +1213,24 @@ function desgloseTarjeta(loan,idx,p){
   var pend=Math.max(0,Math.round((total-abon)*100)/100);
   return {esDiario:esDiario,cap:cap,inte:inte,atr:atr,desc:desc,abon:abon,pend:pend};
 }
-// Al final del resumen: atraso del pago pendiente más antiguo y días desde el último abono
+// Fecha de inicio de un préstamo: por día = día 1; otros = fecha del préstamo.
+// Si el préstamo se registró en la app después de su primer pago, se usa el primer pago (lo más cercano al inicio real).
+function inicioPrestamo(loan){
+  if(loan.frecuencia==='daily_meter'&&loan.meter_start) return loan.meter_start;
+  if(loan.frecuencia==='daily_percent'&&loan.dpct_start) return loan.dpct_start;
+  var f=loan.fecha_prestamo||loan.fecha_creacion||'';
+  if(loan.first_date&&(!f||loan.first_date<f)) f=loan.first_date;
+  return f;
+}
+// Al final del resumen: días desde el préstamo más antiguo y días desde el último abono
 function lineaSinAbono(cl,items){
   var out='';
-  // 1) Pago pendiente más antiguo (mismo conteo de días que la penalización)
-  var masViejo=items.reduce(function(m,it){return (!m||it.p.date<m)?it.p.date:m;},'');
+  // 1) Días desde el inicio del préstamo más antiguo con saldo pendiente
+  var masViejo='',viejoDiario=false;
+  items.forEach(function(it){var f=inicioPrestamo(it.loan);if(f&&(!masViejo||f<masViejo)){masViejo=f;viejoDiario=(it.loan.frecuencia==='daily_meter'||it.loan.frecuencia==='daily_percent');}});
   if(masViejo){
-    var t0=new Date();t0.setHours(0,0,0,0);
-    var atraso=Math.max(0,Math.floor((t0-new Date(masViejo+'T12:00:00'))/86400000));
-    if(atraso>0) out+='\n\nTu pago más antiguo (vencido el '+fmtDate(masViejo).replace(/ /g,'/')+') tiene un atraso de '+atraso+' día'+(atraso!==1?'s':'')+'.';
+    var dt=daysBetween(masViejo,todayStr())+(viejoDiario?1:0); // por día: el día de inicio cuenta como día 1, igual que la tarjeta
+    if(dt>0) out+='\n\nHan transcurrido '+dt+' día'+(dt!==1?'s':'')+' desde tu préstamo más antiguo (inicio: '+fmtDate(masViejo).replace(/ /g,'/')+').';
   }
   // 2) Último abono del cliente en cualquiera de sus préstamos (sin contar eliminados)
   var ids=DB.loans.filter(function(l){return String(l.cliente_id)===String(cl.id);}).map(function(l){return String(l.id);});
