@@ -271,7 +271,8 @@ oninput="if(this.value.length===4)checkPin()">
 <button class="rem-a rem-sms" onclick="sendSMS()">💬 SMS</button>
 </div>
 <div class="rem-row" style="margin-top:-4px;">
-<button class="rem-a" style="background:#e7f9ee;color:#128C7E;" onclick="sendResumenCliente()">🧾 Enviar resumen total</button>
+<button class="rem-a" style="background:#e7f9ee;color:#128C7E;" onclick="sendResumenCliente(false)">🧾 Enviar resumen total</button>
+<button class="rem-a" style="background:#e7f9ee;color:#128C7E;" onclick="sendResumenCliente(true)">🧾 Enviar resumen simple</button>
 </div>
 <div class="tabs" style="margin:0 -14px 14px;">
 <button class="tab active" onclick="dTab('deudas',this)">Pagos pendientes</button>
@@ -686,7 +687,7 @@ El saldo corre desde la fecha de inicio. Si se pasa de la fecha promesa, sigue a
 </div>
 <script>
 // ===== VERSIÓN DE LA APP: súbela en cada cambio que se despliegue =====
-var APP_VERSION='1.0';
+var APP_VERSION='1.2';
 var APP_VERSION_FECHA='16/nov/2026';
 
 var S={owner:localStorage.getItem('pa_owner')||'',myphone:localStorage.getItem('pa_phone')||'',alertdays:parseInt(localStorage.getItem('pa_days')||'3'),tab:'cobrar',client:null,dtab:'deudas',_cl:null,_total:0,sortOrder:'urgencia'};
@@ -1212,7 +1213,7 @@ function desgloseTarjeta(loan,idx,p){
   var pend=Math.max(0,Math.round((total-abon)*100)/100);
   return {esDiario:esDiario,cap:cap,inte:inte,atr:atr,desc:desc,abon:abon,pend:pend};
 }
-function sendResumenCliente(){
+function sendResumenCliente(simple){ // simple=true: capital e interés se muestran juntos como "Adeudo"
   var cl=S._cl; if(!cl){showNotif('Cliente no encontrado');return;}
   var items=[];
   DB.loans.filter(function(l){return String(l.cliente_id)===String(cl.id);}).forEach(function(loan){
@@ -1235,18 +1236,17 @@ function sendResumenCliente(){
       var v=new Date(p.date+'T12:00:00');v.setHours(0,0,0,0);var dif=Math.floor((v-hoy)/86400000);
       enc=(k+1)+') '+(p.concept||loan.concepto)+' · Pago '+(i+1)+' de '+getSched(loan).length+' · '+(dif<0?'venció el ':dif===0?'vence hoy ':'vence el ')+(dif===0?'':fmtDate(p.date));
     }
-    var op='Capital '+fmtMx(d.cap)+' + '+(d.esDiario?'Interés acumulado ':'Interés ')+fmtMx(d.inte)
-      +(d.atr.monto>0?' + Atraso '+fmtMx(d.atr.monto)+(d.atr.detenido?' (detenido)':''):'')
+    var op=(simple?'Adeudo '+fmtMx(d.cap+d.inte):'Capital '+fmtMx(d.cap)+' + '+(d.esDiario?'Interés acumulado ':'Interés ')+fmtMx(d.inte))
+      +(d.atr.monto>0?' + Atraso '+fmtMx(d.atr.monto)+(d.atr.detenido?(function(){var t0=new Date();t0.setHours(0,0,0,0);var reales=Math.max(0,Math.floor((t0-new Date(p.date+'T12:00:00'))/86400000));return ' (detenido en '+d.atr.dias+' día'+(d.atr.dias!==1?'s':'')+' de '+reales+' día'+(reales!==1?'s':'')+')';})():''):'')
       +(d.desc>0?' − Descuento '+fmtMx(d.desc):'')
       +(d.abon>0?' − Abonado '+fmtMx(d.abon):'')
-      +' = '+fmtMx(d.pend);
+      +((simple&&!(d.atr.monto>0)&&!(d.desc>0)&&!(d.abon>0))?'':' = '+fmtMx(d.pend));
     lineas.push(enc+'\n   '+op);
   });
   var msg='Buen día '+cl.nombre+', el total de tu adeudo al día de hoy es de '+fmtMx(T.pend)+'.'
     +'\n\nDesglose ('+items.length+' pago'+(items.length!==1?'s':'')+' pendiente'+(items.length!==1?'s':'')+'):\n'+lineas.join('\n')
     +'\n\nTotales:'
-    +'\n• Capital: '+fmtMx(T.cap)
-    +'\n• Interés: '+fmtMx(T.inte)
+    +(simple?'\n• Adeudo: '+fmtMx(T.cap+T.inte):'\n• Capital: '+fmtMx(T.cap)+'\n• Interés: '+fmtMx(T.inte))
     +(T.atr>0?'\n• Penalización por atraso: +'+fmtMx(T.atr):'')
     +(T.desc>0?'\n• Descuento: −'+fmtMx(T.desc):'')
     +(T.abon>0?'\n• Abonado: −'+fmtMx(T.abon):'')
